@@ -1,14 +1,24 @@
-CC = g++
-CFLAGS = -g -Wall -I.
-OBJ = jstrings.o main.o
+CC := g++
+CFLAGS := -g -Wall
 
-%.o: %.cpp %.h
-	$(CC) -c -o $@ $< $(CFLAGS)
+SRCDIR := src
+BUILDDIR := build
+TARGET := bin/jstrings
 
-default: jstrings
+OBJ := jstrings.o main.o
+INC := -I include
 
-jstrings: main.o jstrings.o
-	$(CC) $(CFLAGS) -o jstrings main.o jstrings.o
+SRCEXT := cpp
+SRC := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
+OBJ := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SRC:.$(SRCEXT)=.o))
 
+$(TARGET): $(OBJ)
+	$(CC) $^ -o $(TARGET)
+
+$(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
+	$(CC) $(CFLAGS) $(INC) -c -o $@ $<
+
+clean:
+	$(RM) -r $(BUILDDIR) $(TARGET)
 
 

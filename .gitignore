@@ -1,3 +1,4 @@
-Debug
-*.txt
+.vscode
+bin
+build
 

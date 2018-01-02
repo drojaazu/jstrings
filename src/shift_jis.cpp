@@ -27,15 +27,12 @@ vector<found_string>* shift_jis::find() {
 	// matching strings
 	vector<found_string>* found_strings = new vector<found_string>;
 	
-	// character read from stream
 	char tempc;
 	uint8_t thisc, nextc;
 
 	found_string this_str;
 	this_str.address = -1;
 	this_str.data.reserve(this->min_len);
-
-	
 
 	bool (*jisx_version)(const uint8_t*, const uint8_t*);
 	if(this->use_jisx0213) jisx_version = shift_jis::is_jisx0213;
@@ -59,6 +56,7 @@ vector<found_string>* shift_jis::find() {
 		nextc = (uint8_t)tempc;
 
 		if((this->is_big_endian && jisx_version(&thisc, &nextc)) || jisx_version(&nextc, &thisc)) {
+			if(this_str.address < 0) this_str.address = this->instream->tellg();
 			this_str.data.push_back(thisc);
 			this_str.data.push_back(nextc);
 			continue;
@@ -69,6 +67,7 @@ vector<found_string>* shift_jis::find() {
 		}
 		
 		// hit an invalid byte
+		// are there enough character matches to make a string?
 		if(this_str.data.size() >= this->min_len) {
 			// add terminator to string
 			this_str.data.push_back('\0');

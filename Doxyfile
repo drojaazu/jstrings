@@ -1,0 +1,13 @@
+# Doxyfile 1.8.13
+DOXYFILE_ENCODING	= UTF-8
+PROJECT_NAME			= jstrings
+PROJECT_NUMBER		= 1
+PROJECT_BRIEF			= "A tool for finding JIS-based character strings in binary streams"
+OUTPUT_DIRECTORY	= docs
+TAB_SIZE					= 2
+USE_MDFILE_AS_MAINPAGE = README.md
+GENERATE_LATEX		= NO
+GENERATE_HTML			= YES
+
+INPUT							= README.md src include
+FILE_PATTERNS			= *.cpp *.h

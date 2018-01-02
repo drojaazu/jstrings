@@ -23,7 +23,8 @@ int main(int argc, char** argv)
 	if (argres != 0) return argres;
 	
 	if(instream == NULL) instream = &cin;
-
+	else instream->seekg(0);
+	
 	jis_enc* encoding = NULL;
 
 	switch(enc) {

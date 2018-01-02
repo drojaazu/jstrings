@@ -30,3 +30,5 @@ To Do
 -----
 - Add support for other JIS encodings: CP932, EUC
 - Add support for JIS X 0212 for non-SJIS encodings (only EUC?)
+- Add option to only return strings with double-byte characters present
+

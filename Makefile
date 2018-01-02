@@ -3,7 +3,9 @@ CFLAGS := -g -Wall
 
 SRCDIR := src
 BUILDDIR := build
-TARGET := bin/jstrings
+BINDIR := bin
+
+TARGET := $(BINDIR)/jstrings
 
 OBJ := jstrings.o main.o
 INC := -I include
@@ -13,9 +15,11 @@ SRC := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
 OBJ := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SRC:.$(SRCEXT)=.o))
 
 $(TARGET): $(OBJ)
+	@mkdir -p $(BINDIR)
 	$(CC) $^ -o $(TARGET)
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
+	@mkdir -p $(BUILDDIR)
 	$(CC) $(CFLAGS) $(INC) -c -o $@ $<
 
 clean:

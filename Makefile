@@ -26,5 +26,6 @@ clean:
 	$(RM) -r $(BUILDDIR)/* $(TARGET)
 
 init:
-	mkdir build
-	mkdir bin
+	mkdir $(BUILDDIR)
+	mkdir $(BINDIR)
+

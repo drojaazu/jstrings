@@ -24,22 +24,25 @@ bool shift_jis::is_byte2_valid(const uint8_t* c) {
 
 vector<found_string>* shift_jis::find() {
 	
-	// matching strings
+	// list of found strings
 	vector<found_string>* found_strings = new vector<found_string>;
 	
+	// work bytes
 	char tempc;
 	uint8_t thisc, nextc;
 
+	// work string
 	found_string this_str;
 	this_str.address = -1;
 	this_str.data.reserve(this->min_len);
 
+	// choose which double byte filter to use
 	bool (*jisx_version)(const uint8_t*, const uint8_t*);
 	if(this->use_jisx0213) jisx_version = shift_jis::is_jisx0213;
 	else jisx_version = shift_jis::is_jisx0208;
 
+	// stream read loop
 	while(this->instream->get(tempc)) {
-		// get first byte
 		thisc = (uint8_t)tempc;
 	
 		// check for JIS X 0201 (single byte)

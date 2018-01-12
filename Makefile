@@ -6,8 +6,6 @@ BUILDDIR := build
 BINDIR := bin
 
 TARGET := $(BINDIR)/jstrings
-
-OBJ := jstrings.o main.o
 INC := -I include
 
 SRCEXT := cpp

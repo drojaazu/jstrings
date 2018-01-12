@@ -47,7 +47,6 @@ vector<found_string>* shift_jis::find() {
 	
 		// check for JIS X 0201 (single byte)
 		if(this->is_jisx0201_printable(&thisc)) {
-			//if(this_str.address < 0) this_str.address = (off_t)(this->instream->tellg()) - 1;
 			if(this_str.address < 0) this_str.address = this->instream->tellg();
 			this_str.data.push_back(thisc);
 			continue;

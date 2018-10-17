@@ -11,7 +11,7 @@
 
 using namespace std;
 
-istream* instream = NULL;
+istream* indata = nullptr;
 size_t min_len = 0;
 encodings enc = shift_jis_enc;
 bool big_endian = true;
@@ -19,21 +19,26 @@ bool jisx0213 = false;
 
 int main(int argc, char** argv)
 {
-	int argres = process_args(argc, argv);
-	if (argres != 0) return argres;
+	process_args(argc, argv);
+
+	if(indata == nullptr) indata = &cin;
+	else {
+		if(!indata->good()) {
+				cerr << "File could not be opened" << endl;
+				return 2;
+		}
+		indata->seekg(0);
+	}
 	
-	if(instream == NULL) instream = &cin;
-	else instream->seekg(0);
-	
-	jis_enc* encoding = NULL;
+	jis_enc* encoding = nullptr;
 
 	switch(enc) {
 		case shift_jis_enc:
-			encoding = new shift_jis(instream);
+			encoding = new shift_jis(indata);
 			break;
 		default:
-			cout << "Encoding not yet supported" << endl;
-			return -1;
+			cerr << "Encoding not yet supported" << endl;
+			return 3;
 	}
 
 	// set up command line values
@@ -50,67 +55,65 @@ int main(int argc, char** argv)
 		cout << thisstring.address << " " << &thisstring.data[0] << endl;
 	}
 
-	if(instream != &cin) delete instream;
+	if(indata != &cin) delete indata;
 	delete encoding;
 	
 	return 0;
 }
 
-int process_args(int argc, char** argv) {
-	if(argc < 2) return 0;
+void process_args(int argc, char** argv) {
 	
-	for(int argloop = 1; argloop < argc; argloop++) {
-		
-		// OPTION -m - set minimum length of string
-		if(!strcmp(argv[argloop], "-m")) {
-			if(++argloop >= argc) {
-				cout << "Nothing specified for -m option" << endl;
-				return 1;
-			}
-			min_len = strtoul(argv[argloop], NULL, 10);
-			if(min_len < 1) {
-				cout << "Invalid value for minimum length option" << endl;
-				return 1;
-			}
-		}
+	// TODO: add option for double-byte strings bias	
+	// OPTION -d - prefer double-byte strings
 
-		// OPTION -e - set encoding
-		else if(!strcmp(argv[argloop], "-e")) {
-			if(++argloop >= argc) {
-				cout << "Nothing specified for -e option" << endl;
-				return 1;
-			}
-			if(!strcmp(argv[argloop], "shift-jis") || !strcmp(argv[argloop], "sjis"))
-				enc = shift_jis_enc;
-			else {
-				cout << "Invalid value for encoding option" << endl;
-				return 1;
-			}
-		}
+	
+	
+	
+	const char* const short_opts = ":m:e:l";
+	const option long_opts[] = {
+		{"min-length", required_argument, nullptr, 'm'},
+		{"encoding", required_argument, nullptr, 'e'},
+		{"little-endian", no_argument, nullptr, 'l'},
+		{"jisx0213", no_argument, nullptr, 'x'}
+	};
+	
+	int this_opt;
 
-		// OPTION -d - prefer double-byte strings
-
-		// OPTION -l - little-endian
-		else if(!strcmp(argv[argloop], "-l")) {
-			big_endian = false;
-		}
-
-		//OPTION -jisx0213 - Use JIS X 0213 character set
-		else if(!strcmp(argv[argloop], "-jisx0213")) {
-			jisx0213 = true;
-		}
-		
-		// OPTION filename
-		else {
-			ifstream* infile = new ifstream();
-			infile->open(argv[argloop], ifstream::binary);
-			if(!infile->good()) {
-				cout << "File could not be opened" << endl;
-				return 2;
-			}
-			instream = infile;
+	while((this_opt = getopt_long(argc, argv, short_opts, long_opts, nullptr)) != -1) {
+		switch(this_opt) {
+			case 'm':
+				// OPTION -m - set minimum length of string
+				min_len = strtoul(optarg, nullptr, 10);
+				break;
+			case 'e':
+				// OPTION -e - set encoding
+				// TODO: move encodings into a map
+				if(!strcmp(optarg, "shift-jis") || !strcmp(optarg, "sjis"))
+					enc = shift_jis_enc;
+				else {
+					cerr << "Unsupported encoding, defaulting to Shift-JIS" << endl;
+				}
+				break;
+			case 'l':
+				// OPTION -l - little-endian
+				big_endian = false;
+				break;
+			case 'x':
+				// OPTION -jisx0213 - Use JIS X 0213 character set
+				jisx0213 = true;
+				break;
+			case '?':
+				cerr << "Unknown option: " << (char)optopt << endl;
+				break;
+			case ':':
+				cerr << "Missing arg for option: " << (char)optopt << endl;
+				break;
 		}
 	}
-	
-	return 0;
+
+	if(optind < argc) {
+		// only read the first non-option argument, assuming it is input filename
+		indata = new ifstream(argv[optind]);
+	}
+
 }

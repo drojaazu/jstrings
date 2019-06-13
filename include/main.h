@@ -5,16 +5,16 @@
  * \date 2017.12.30
  * \copyright GNU Public License
  */
-#include <stdio.h>
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <string.h>
-#include <stdlib.h>
-#include <vector>
 #include <getopt.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <vector>
 
-#include "jis_enc.h"
+#include "jis_encoding.h"
 #include "shift_jis.h"
 
 /*!

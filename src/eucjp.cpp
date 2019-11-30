@@ -1,4 +1,4 @@
-#include "euc.h"
+#include "eucjp.h"
 
 #include <stdint.h>
 #include <string.h>

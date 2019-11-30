@@ -10,13 +10,16 @@ static const string version = string("1.1");
 
 istream *indata = nullptr;
 size_t match_len = 0;
-// encoding enc = shift_jis_enc;
-encoding enc = cp932_enc;
 string encoding_str = "";
 
 // 512k of buffer
 static const u32 DATABUFF_SIZE = 524288;
 static const u8 DEFAULT_MATCH_LEN = 10;
+
+map<const string, enctypes> enclist{
+		{"shift-jis", shift_jis}, {"shiftjis", shift_jis}, {"sjis", shift_jis},
+		{"cp932", cp932},					{"windows932", cp932},	 {"windows-31j", cp932},
+		{"euc", eucjp},						{"euc-jp", eucjp},			 {"eucjp", eucjp}};
 
 int main(int argc, char **argv)
 {
@@ -31,20 +34,26 @@ int main(int argc, char **argv)
 			indata = &cin;
 		else {
 			if(!indata->good()) {
-				cerr << "File could not be opened" << endl;
-				return 2;
+				throw invalid_argument("File could not be opened");
 			}
 			indata->seekg(0);
 		}
 
-		switch(enc) {
-			case shift_jis_enc:
+		if(encoding_str.empty())
+			encoding_str = "shiftjis";
+
+		if(enclist.find(encoding_str) == enclist.end()) {
+			throw invalid_argument("Invlaid encoding specified");
+		}
+
+		switch(enclist.at(encoding_str)) {
+			case shift_jis:
 				encoding = new encodings::shift_jis();
 				break;
-			case euc_enc:
+			case eucjp:
 				encoding = new encodings::euc();
 				break;
-			case cp932_enc:
+			case cp932:
 				encoding = new encodings::cp932();
 				break;
 			default:
@@ -198,146 +207,6 @@ int main(int argc, char **argv)
 		return -1;
 	}
 }
-
-/*
-psudo code planning time
-
-byte buffer - say 512k in size
-read 512k from file into buffer
-check for the number of bytes actually read
-(http://www.cplusplus.com/reference/istream/istream/read/ - gcount member)
-this_buf_size = num bytes read
-
-each encoding has a max byte size - sjis 2 bytes, euc 3 bytes, etc
-
-maintain offset counter inside buffer array
-pass pointer to next data inside array to encoding->is_valid
-
-if this_buf_size - current buffer offset is less than max byte size for
-encoding, re-read  the buffer from that point
-
-
-*/
-/*
-vector<found_string> *find_strings(istream &instream, jis_encoding &encoding,
-																	 jis_charset charset)
-{
-	// list of found strings
-	vector<found_string> *found_strings = new vector<found_string>;
-
-	u8 buffer[DATABUFF];
-
-	// work bytes
-	char tempc;
-	u8 this_c, next_c;
-
-	// work string
-	found_string this_str;
-	this_str.address = -1;
-	// this_str.data.reserve(this->match_len);
-
-	streamsize buff_len;
-	off_t buff_ptr{0};
-	int remaining{0};
-	u8 max_seq_len = encoding.get_max_seq_len();
-	u8 valid_count;
-	u8 iter;
-	while(1) {
-		buff_len = instream.read((char *)buffer, DATABUFF).gcount();
-		buff_ptr = 0;
-		remaining = buff_len;
-		// process work here
-		while(remaining >= max_seq_len) {
-			valid_count = encoding.is_valid(buffer + buff_ptr);
-			if(valid_count) {
-				buff_ptr += valid_count;
-				for(iter = 0; iter < valid_count; ++iter) {
-					this_str.data.push_back(buffer[buff_ptr + iter]);
-				}
-
-			} else {
-				++buff_ptr;
-				// hit an invalid byte
-				// are there enough character matches to make a string?
-				if(this_str.data.size() >= this->match_len) {
-					// add terminator to string
-					this_str.data.push_back('\0');
-					found_strings->push_back(this_str);
-				}
-			}
-			remaining = buff_len - buff_ptr;
-		}
-
-		// if we're already past the end of the file, we're done here
-		if(instream.eof()) {
-			break;
-		}
-
-		// re-read the buffer from the point where we stopped
-		instream.seekg(-(buff_ptr - (buff_len - buff_ptr)), std::ios_base::cur);
-	}
-
-	// stream read loop
-	while(instream.get(tempc)) {
-		this_c = (u8)tempc;
-
-		// ---- CHECK #1 - 8-BIT VALIDITY (JIS X 0201)
-		if(encoding.is_jisx0201(&this_c)) {
-			// subtract two from tellg address to account for the posistion of the
-			// stream pointer (which is after the 'current' byte)
-			if(this_str.address < 0)
-				this_str.address = (instream.tellg() - (streampos)1);
-			this_str.data.push_back(this_c);
-			continue;
-		}
-
-		// ---- CHECK #2 - 16-BIT VALIDITY (JIS X 0208, 0212, 0213)
-		// first byte was valid, let's check the next one
-		// get next byte
-		if(!instream->get(tempc))
-			continue;
-		next_c = (uint8_t)tempc;
-
-		if((this->is_big_endian && jisx_version(this_c, next_c, this->accurate)) ||
-			 jisx_version(next_c, this_c, this->accurate)) {
-			// subtract two from tellg address to account for the posistion of the
-			// stream pointer (which is after the 'current' byte) and for next_c that
-			// was read from the stream
-			if(this_str.address < 0)
-				this_str.address = (instream->tellg() - (streampos)2);
-			this_str.data.push_back(this_c);
-			this_str.data.push_back(next_c);
-			continue;
-		} else {
-			// push the read pointer back a byte
-			instream->unget();
-		}
-
-		// hit an invalid byte
-		// are there enough character matches to make a string?
-		if(this_str.data.size() >= this->match_len) {
-			// add terminator to string
-			this_str.data.push_back('\0');
-			found_strings->push_back(this_str);
-		}
-		this_str.data.clear();
-		this_str.data.reserve(this->match_len);
-		this_str.address = -1;
-	}
-	// do a final check if we were in the middle of a group of valid bytes
-	// todo - make this DRY
-	if(this_str.data.size() >= this->match_len) {
-		// add terminator to string
-		this_str.data.push_back('\0');
-		found_strings->push_back(this_str);
-	}
-	this_str.data.clear();
-	this_str.data.reserve(this->match_len);
-	this_str.address = -1;
-
-	return found_strings;
-}
-*/
 
 void process_args(int argc, char **argv)
 {

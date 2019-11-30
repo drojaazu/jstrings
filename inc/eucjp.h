@@ -5,8 +5,8 @@
  * \date 2017.12.30
  * \copyright GNU Public License
  */
-#ifndef EUC_H
-#define EUC_H
+#ifndef EUCJP_H
+#define EUCJP_H
 #include "jis_encoding.h"
 
 namespace encodings

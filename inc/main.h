@@ -9,20 +9,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <vector>
 
+#include "euc.h"
 #include "jis_encoding.h"
 #include "shift_jis.h"
+#include "types.h"
 
 /*!
  * \enum encodings
  * \brief List of supported JIS encodings
  */
-
-enum encodings { shift_jis_enc, cp932_enc, euc_enc };
+enum encoding { shift_jis_enc, cp932_enc, euc_enc };
 
 void process_args(int argc, char **argv);
 

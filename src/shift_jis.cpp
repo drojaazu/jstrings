@@ -22,8 +22,9 @@ u8 shift_jis::is_valid(u8 *data)
 {
 	// JIS X 0201 - 8-bit characters (including 7-bit ASCII)
 	// excludes non-printable (control code) and reserved bytes
+	// (but include tab (0x09))
 	u8 c_hi{*data};
-	if((c_hi >= 0x20) & (c_hi <= 0x7e) || (c_hi >= 0xa1) & (c_hi <= 0xdf))
+	if((c_hi == 0x09) || (c_hi >= 0x20) & (c_hi <= 0x7e) || (c_hi >= 0xa1) & (c_hi <= 0xdf))
 		return 1;
 
 	// JIS X 0208 - 16 bit characters

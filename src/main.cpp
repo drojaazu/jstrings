@@ -11,7 +11,7 @@ static const string version = string("1.1");
 istream *indata = nullptr;
 size_t match_len = 0;
 // encoding enc = shift_jis_enc;
-encoding enc = euc_enc;
+encoding enc = cp932_enc;
 string encoding_str = "";
 
 // 512k of buffer
@@ -43,6 +43,9 @@ int main(int argc, char **argv)
 				break;
 			case euc_enc:
 				encoding = new encodings::euc();
+				break;
+			case cp932_enc:
+				encoding = new encodings::cp932();
 				break;
 			default:
 				cerr << "Encoding not yet supported" << endl;

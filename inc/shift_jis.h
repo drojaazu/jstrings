@@ -18,7 +18,7 @@ public:
 	shift_jis() : jis_encoding(2){};
 	u8 is_valid(u8 *data);
 
-private:
+protected:
 	bool is_lobyte_valid(const u8 c);
 };
 

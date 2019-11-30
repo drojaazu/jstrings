@@ -10,8 +10,8 @@ u8 euc::is_valid(u8 *data)
 
 	u8 c_hi{*data};
 
-	// ASCII
-	if((c_hi >= 0x20) & (c_hi <= 0x7e))
+	// ASCII except control characters
+	if((c_hi == 0x09) || (c_hi >= 0x20) & (c_hi <= 0x7e))
 		return 1;
 
 	u8 c_lo{*(data + 1)};

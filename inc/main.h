@@ -14,6 +14,7 @@
 #include <iomanip>
 #include <iostream>
 
+#include "cp932.h"
 #include "euc.h"
 #include "jis_encoding.h"
 #include "shift_jis.h"

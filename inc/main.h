@@ -1,10 +1,10 @@
 /*!
- * \brief A tool for finding JIS-based character strings in a binary stream
  * \author Damian Rogers (damian@sudden-desu.net)
- * \version 1.0
- * \date 2017.12.30
- * \copyright GNU Public License
+ * \version 1.1
+ * \date 2019.12.01
+ * \copyright MIT License
  */
+
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,15 +14,15 @@
 #include <iomanip>
 #include <iostream>
 
-#include "cp932.h"
-#include "eucjp.h"
-#include "jis_encoding.h"
-#include "shift_jis.h"
+#include "enc_cp932.h"
+#include "enc_eucjp.h"
+#include "enc_shiftjis.h"
+#include "encoding.h"
 #include "types.h"
 
 /*!
  * \enum encodings
- * \brief List of supported JIS encodings
+ * \brief List of supported encodings
  */
 enum enctypes { shift_jis, cp932, eucjp };
 

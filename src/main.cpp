@@ -8,22 +8,23 @@ using namespace std;
 
 static const string version = string("1.1");
 
+// 512k of buffer
+static u32 const DATABUFF_SIZE = 524288;
+static u8 const DEFAULT_MATCH_LEN = 10;
+
 istream *indata = nullptr;
-size_t match_len = 0;
+size_t match_len = DEFAULT_MATCH_LEN;
+size_t str_cutoff{0};
 string encoding_str = "";
 
-// 512k of buffer
-static const u32 DATABUFF_SIZE = 524288;
-static const u8 DEFAULT_MATCH_LEN = 10;
-
-map<const string, enctypes> enclist{
+static const map<const string, enctypes> enclist{
 		{"shift-jis", shift_jis}, {"shiftjis", shift_jis}, {"sjis", shift_jis},
-		{"cp932", cp932},					{"windows932", cp932},	 {"windows-31j", cp932},
+		{"cp932", cp932},					{"windows932", cp932},	 {"windows31j", cp932},
 		{"euc", eucjp},						{"euc-jp", eucjp},			 {"eucjp", eucjp}};
 
 int main(int argc, char **argv)
 {
-	jis_encoding *encoding = nullptr;
+	encoding *encoding = nullptr;
 	vector<found_string> results;
 
 	try {
@@ -40,29 +41,27 @@ int main(int argc, char **argv)
 		}
 
 		if(encoding_str.empty())
-			encoding_str = "shiftjis";
+			encoding = new encodings::shift_jis();
+		else {
+			if(enclist.find(encoding_str) == enclist.end()) {
+				throw invalid_argument("Invlaid encoding specified");
+			}
 
-		if(enclist.find(encoding_str) == enclist.end()) {
-			throw invalid_argument("Invlaid encoding specified");
+			switch(enclist.at(encoding_str)) {
+				case shift_jis:
+					encoding = new encodings::shift_jis();
+					break;
+				case eucjp:
+					encoding = new encodings::euc();
+					break;
+				case cp932:
+					encoding = new encodings::cp932();
+					break;
+				default:
+					cerr << "Encoding not yet supported" << endl;
+					return 3;
+			}
 		}
-
-		switch(enclist.at(encoding_str)) {
-			case shift_jis:
-				encoding = new encodings::shift_jis();
-				break;
-			case eucjp:
-				encoding = new encodings::euc();
-				break;
-			case cp932:
-				encoding = new encodings::cp932();
-				break;
-			default:
-				cerr << "Encoding not yet supported" << endl;
-				return 3;
-		}
-
-		if(match_len < 1)
-			match_len = DEFAULT_MATCH_LEN;
 
 #ifdef DEBUG
 		std::chrono::high_resolution_clock::time_point t1 =
@@ -111,7 +110,7 @@ int main(int argc, char **argv)
 			if(bytecount < 1)
 				break;
 
-			// and cache this too...
+			// cache this too...
 			buffborder = bytecount - enc_max_seqlen;
 
 			for(databuff_ptr = 0; databuff_ptr < bytecount;) {
@@ -145,6 +144,11 @@ int main(int argc, char **argv)
 						workstr.address = stream_ptr;
 					}
 					glyphcount++;
+					if(str_cutoff > 0 && glyphcount >= str_cutoff) {
+						databuff_ptr += validcount;
+						stream_ptr += validcount;
+						continue;
+					}
 					std::copy(&databuff[databuff_ptr],
 										&databuff[databuff_ptr + validcount],
 										std::back_inserter(workstr.data));
@@ -212,7 +216,8 @@ void process_args(int argc, char **argv)
 {
 	const char *const short_opts = ":hm:e:lxf";
 	const option long_opts[] = {{"help", no_argument, nullptr, 'h'},
-															{"min-length", required_argument, nullptr, 'm'},
+															{"match-length", required_argument, nullptr, 'm'},
+															{"cutoff", required_argument, nullptr, 'c'},
 															{"encoding", required_argument, nullptr, 'e'},
 															{nullptr, 0, nullptr, 0}};
 
@@ -226,6 +231,13 @@ void process_args(int argc, char **argv)
 		switch(this_opt) {
 			case 'm':
 				match_len = strtoul(optarg, nullptr, 10);
+				if(match_len < 1)
+					throw invalid_argument("Match length must be a positive value");
+				break;
+			case 'c':
+				str_cutoff = strtoul(optarg, nullptr, 10);
+				if(str_cutoff < 1)
+					throw invalid_argument("Max length must be a positive value");
 				break;
 			case 'e':
 				encoding_str = argv[optind];
@@ -261,5 +273,12 @@ void print_help()
 {
 	cerr << "jstrings version " << version << endl << endl;
 	cerr << "Valid options:" << endl;
-	cerr << "  --encoding, -e     Specify encoding to use" << endl;
+	cerr << "  --encoding, -e         Specify encoding to use" << endl;
+	cerr << "         (Valid options: shiftjis, cp932, eucjp)" << endl;
+	cerr << "  --match-length, -m     Specify number of sequential characters "
+					"required to qualify as a string"
+			 << endl;
+	cerr << "  --cutoff, -c       Specify maximum number of characters to "
+					"display in a single string"
+			 << endl;
 }

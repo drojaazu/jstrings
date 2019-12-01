@@ -1,15 +1,11 @@
-#include "shift_jis.h"
+#include "enc_shiftjis.h"
 
 #include <stdint.h>
 #include <string.h>
 
 namespace encodings
 {
-/*
-	This supports traditional Shift-JIS, which encompasses JIS X 0201 and JIS X
-	0208 There is extended support for 0213, though we're not going to fiddle with
-	it Maybe we'll make an extended class
-*/
+
 bool shift_jis::is_lobyte_valid(const u8 c)
 {
 	// sjis lower byte can never be these values
@@ -18,13 +14,19 @@ bool shift_jis::is_lobyte_valid(const u8 c)
 	return true;
 }
 
+/*
+	This supports traditional Shift-JIS, which encompasses JIS X 0201 and JIS X
+	0208 There is extended support for 0213, though we're not going to fiddle with
+	it Maybe we'll make an extended class
+*/
 u8 shift_jis::is_valid(u8 *data)
 {
 	// JIS X 0201 - 8-bit characters (including 7-bit ASCII)
 	// excludes non-printable (control code) and reserved bytes
 	// (but include tab (0x09))
 	u8 c_hi{*data};
-	if((c_hi == 0x09) || (c_hi >= 0x20) & (c_hi <= 0x7e) || (c_hi >= 0xa1) & (c_hi <= 0xdf))
+	if((c_hi == 0x09) || (c_hi >= 0x20) & (c_hi <= 0x7e) ||
+		 (c_hi >= 0xa1) & (c_hi <= 0xdf))
 		return 1;
 
 	// JIS X 0208 - 16 bit characters

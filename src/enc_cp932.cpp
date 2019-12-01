@@ -1,4 +1,4 @@
-#include "cp932.h"
+#include "enc_cp932.h"
 
 namespace encodings
 {

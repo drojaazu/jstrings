@@ -1,20 +1,21 @@
 /*!
  * \author Damian Rogers (damian@sudden-desu.net)
- * \version 1.0
- * \date 2017.12.30
- * \copyright GNU Public License
+ * \version 1.1
+ * \date 2019.12.01
+ * \copyright MIT License
  */
-#ifndef JIS_ENCODING_H
-#define JIS_ENCODING_H
+
+#ifndef ENCODING_H
+#define ENCODING_H
 #include "types.h"
 
 /*!
- * \brief Abstract for JIS based encoding classes
+ * \brief Abstract for encoding classes
  */
-class jis_encoding
+class encoding
 {
 public:
-	jis_encoding(u8 max_seq_len) { this->max_seq_len = max_seq_len; }
+	encoding(u8 max_seq_len) { this->max_seq_len = max_seq_len; }
 
 	/*!
 	 * \brief Determines if the given bytes are a valid byte sequence for the
@@ -28,4 +29,4 @@ protected:
 	u8 max_seq_len;
 };
 
-#endif // JIS_ENCODING_H
+#endif // ENCODING_H

@@ -1,3 +1,10 @@
+/*!
+ * \author Damian Rogers (damian@sudden-desu.net)
+ * \version 1.1
+ * \date 2019.12.01
+ * \copyright MIT License
+ */
+
 #ifndef TYPES_H
 #define TYPES_H
 
@@ -19,9 +26,6 @@ typedef int64_t s64;
 template <typename T> using uptr = std::unique_ptr<T>;
 template <typename T> using sptr = std::shared_ptr<T>;
 
-/**
- * Key-value map
- */
 typedef std::map<const std::string, std::string> kvmap;
 
 /*!

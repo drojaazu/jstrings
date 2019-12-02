@@ -16,10 +16,7 @@ class shift_jis : public encoding
 {
 public:
 	shift_jis() : encoding(2){};
-	u8 is_valid(u8 *data);
-
-protected:
-	bool is_lobyte_valid(const u8 c);
+	u8 is_valid(u8 const *data);
 };
 
 } // namespace encodings

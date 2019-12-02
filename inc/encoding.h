@@ -21,7 +21,7 @@ public:
 	 * \brief Determines if the given bytes are a valid byte sequence for the
 	 * encoding. Returns the number of valid bytes if true.
 	 */
-	virtual u8 is_valid(u8 *data) = 0;
+	virtual u8 is_valid(u8 const *data) = 0;
 
 	const u8 get_max_seq_len() { return this->max_seq_len; }
 

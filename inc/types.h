@@ -26,7 +26,7 @@ typedef int64_t s64;
 template <typename T> using uptr = std::unique_ptr<T>;
 template <typename T> using sptr = std::shared_ptr<T>;
 
-typedef std::map<const std::string, std::string> kvmap;
+typedef std::map<std::string const, std::string> kvmap;
 
 /*!
  * \brief POD structure for containing a found string

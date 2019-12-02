@@ -6,7 +6,7 @@
 
 using namespace std;
 
-static const string version = string("1.1");
+static const string version = string("1.0");
 
 // 512k of buffer
 static u32 const DATABUFF_SIZE = 524288;

@@ -5,21 +5,12 @@
 
 namespace encodings
 {
-
-bool shift_jis::is_lobyte_valid(const u8 c)
-{
-	// sjis lower byte can never be these values
-	if((c >= 0x0) & (c <= 0x3f) || (c == 0x7f) || (c >= 0xfd) & (c <= 0xff))
-		return false;
-	return true;
-}
-
 /*
 	This supports traditional Shift-JIS, which encompasses JIS X 0201 and JIS X
 	0208 There is extended support for 0213, though we're not going to fiddle with
 	it Maybe we'll make an extended class
 */
-u8 shift_jis::is_valid(u8 *data)
+u8 shift_jis::is_valid(u8 const *data)
 {
 	// JIS X 0201 - 8-bit characters (including 7-bit ASCII)
 	// excludes non-printable (control code) and reserved bytes
@@ -32,9 +23,9 @@ u8 shift_jis::is_valid(u8 *data)
 	// JIS X 0208 - 16 bit characters
 	u8 c_lo{*(data + 1)};
 
-	// if accurate mode, check for hi byte here
-	// always check for lo byte tho:
-	if(!shift_jis::is_lobyte_valid(c_lo))
+	// sjis lower byte can never be these values
+	if((c_lo >= 0x0) & (c_lo <= 0x3f) || (c_lo == 0x7f) ||
+		 (c_lo >= 0xfd) & (c_lo <= 0xff))
 		return false;
 
 	// we've determined the second byte is valid as part of an SJIS encoded pair
@@ -42,7 +33,7 @@ u8 shift_jis::is_valid(u8 *data)
 	// if(!accurate_mode)
 	//	return true;
 
-	// Partial ku (excluding 0x7f)
+	// Partial fields (always excluding 0x7f)
 	// 0x81 - 0x40 to 0xac, 0xb8 to 0xbf, 0xc8 to 0xce, 0xda to 0xe8, 0xf0 to
 	// 0xf7, 0xfc 0x82 - 0x4f to 0x58, 0x60 to 0x79, 0x81 to 0x9a, 0x9f to 0xf1
 	// 0x83 - 0x40 to 0x96, 0x9f to 0xb6, 0xbf to 0xd6
@@ -85,7 +76,7 @@ u8 shift_jis::is_valid(u8 *data)
 				return 2;
 			return false;
 	}
-	// Full ku (0x40 to 0xfc, excluding 0x7f)
+	// Full fields (0x40 to 0xfc, excluding 0x7f)
 	// 0x89 to 0x97, 0x99 to 0xe9
 	if((((c_hi >= 0x89) & (c_hi <= 0x97)) || ((c_hi >= 0x99) & (c_hi <= 0xe9))) &&
 		 ((c_lo >= 0x40) & (c_lo <= 0xfc)))

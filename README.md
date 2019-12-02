@@ -1,35 +1,47 @@
 # jstrings
-A tool for finding JIS-based Japanese characters in binary data.
+A tool for finding JIS-based Japanese text in binary data.
 
 ## Usage
-	jstrings [options] [input]
+	jstrings [options] [input_file]
 
-Input can be a filename or data from stdin.
+Input can be a filename or data from stdin. Output is sent to stdout.
 
 ### Options
-	-m number
-
-Set minimum number of characters to match as a valid string. Default: 10.
-
 	-e encoding
+	--encoding encoding
 
-Specify the encoding to use. Currently, the only valid value is "shift-jis". Default: shift-jis
+Specify the encoding to use. Use one of the strings listed in parantheses below for that encoding:
 
-	-l
+* Shift-JIS (shift-jis, shiftjis, sjis)
+* EUC-JP (euc, euc-jp, eucjp)
+* Microsoft CP932 (cp932, windows932, windows31j)
 
-Use little-endian order for multibyte characters
+Optional; default is Shift-JIS.
 
-	-jisx0213
+	-m number
+	--match-length number
 
-Use JIS X 0213 character set instead of JIS X 0208 for double byte characters
+Set minimum number of characters to match as a valid string. Optional; default is 10.
 
-## Notes
+	-c number
+	--cutoff number
+
+Limit the output to the specified number of characters for a string. This is useful for "previewing" a file which may have large blocks of junk data that happen to fall within the range of valid encoding values. Optional; default is no cutoff.
+
+## Output
 Data is output in its original encoding without any conversion. Other tools, such as iconv, can do conversion to something more useful (such as UTF8). For example:
 
-	jstrings file.bin | iconv -f SHIFT-JIS -t UTF-8 -c
+	# for Shift-JIS
+	jstrings file.bin | iconv -f SHIFT-JIS -t UTF-8 -c | less
+	# for CP932
+	jstrings file.bin | iconv -f CP932 -t UTF-8 -c | less
+	# for EUC-JP
+	jstrings file.bin | iconv -f EUC-JP -t UTF-8 -c | less
 
-### To Do
-- Add support for other JIS encodings: CP932, EUC
-- Add support for JIS X 0212 for non-SJIS encodings (only EUC?)
-- Add option to only return strings with double-byte characters present
+## Building
+CMake is used for the build system. From the root directory:
 
+	mkdir build && cd build
+	cmake ..
+	make
+	sudo make install

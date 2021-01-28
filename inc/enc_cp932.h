@@ -17,6 +17,7 @@ class cp932 : public shift_jis
 {
 public:
 	u8 is_valid(u8 const *data);
+	~cp932(){};
 };
 
 } // namespace encodings

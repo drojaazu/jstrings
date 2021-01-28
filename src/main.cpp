@@ -1,12 +1,11 @@
 #include "main.h"
+#include "project.hpp"
 
 #ifdef DEBUG
 #include <chrono>
 #endif
 
 using namespace std;
-
-static const string version = string("1.0");
 
 // 512k of buffer
 static u32 const DATABUFF_SIZE = 524288;
@@ -79,7 +78,7 @@ int main(int argc, char **argv)
 		// --- if yes, add string to list
 		// -- clear temp string
 		// start over
-		vector<found_string> found_strings();
+		vector<found_string> found_strings;
 		u8 databuff[DATABUFF_SIZE];
 		streamsize bytecount;
 		u32 work_iter;
@@ -271,7 +270,7 @@ void process_args(int argc, char **argv)
 
 void print_help()
 {
-	cerr << "jstrings version " << version << endl << endl;
+	cerr << PROJECT::PROJECT_NAME << " - ver. " << PROJECT::VERSION << endl << endl;
 	cerr << "Valid options:" << endl;
 	cerr << "  --encoding, -e         Specify encoding to use" << endl;
 	cerr << "         (Valid options: shiftjis, cp932, eucjp)" << endl;

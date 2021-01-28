@@ -16,6 +16,8 @@ class encoding
 {
 public:
 	encoding(u8 max_seq_len) { this->max_seq_len = max_seq_len; }
+	encoding() = delete;
+	virtual ~encoding(){};
 
 	/*!
 	 * \brief Determines if the given bytes are a valid byte sequence for the

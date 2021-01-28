@@ -12,6 +12,7 @@
 #include <memory>
 #include <stdint.h>
 #include <vector>
+#include <sys/types.h>
 
 typedef uint8_t u8;
 typedef uint16_t u16;

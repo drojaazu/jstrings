@@ -17,6 +17,7 @@ class shift_jis : public encoding
 public:
 	shift_jis() : encoding(2){};
 	u8 is_valid(u8 const *data);
+	~shift_jis(){};
 };
 
 } // namespace encodings

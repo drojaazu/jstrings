@@ -12,12 +12,12 @@
 namespace encodings
 {
 
-class shift_jis : public encoding
+class encoding_shiftjis : public encoding
 {
 public:
-	shift_jis() : encoding(2){};
+	encoding_shiftjis() : encoding(2){};
 	u8 is_valid(u8 const *data);
-	~shift_jis(){};
+	~encoding_shiftjis(){};
 };
 
 } // namespace encodings

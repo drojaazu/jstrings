@@ -13,11 +13,11 @@
 namespace encodings
 {
 
-class cp932 : public shift_jis
+class encoding_cp932 : public encoding_shiftjis
 {
 public:
 	u8 is_valid(u8 const *data);
-	~cp932(){};
+	~encoding_cp932(){};
 };
 
 } // namespace encodings

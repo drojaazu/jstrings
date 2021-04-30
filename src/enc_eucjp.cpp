@@ -5,7 +5,7 @@
 
 namespace encodings
 {
-u8 euc::is_valid(u8 const *data)
+u8 encoding_eucjp::is_valid(u8 const *data)
 {
 
 	u8 c_hi{*data};

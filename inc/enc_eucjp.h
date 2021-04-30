@@ -11,12 +11,12 @@
 namespace encodings
 {
 
-class euc : public encoding
+class encoding_eucjp : public encoding
 {
 public:
-	euc() : encoding(3){};
+	encoding_eucjp() : encoding(3){};
 	u8 is_valid(u8 const *data);
-	~euc(){};
+	~encoding_eucjp(){};
 };
 
 } // namespace encodings

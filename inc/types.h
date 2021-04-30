@@ -29,21 +29,4 @@ template <typename T> using sptr = std::shared_ptr<T>;
 
 typedef std::map<std::string const, std::string> kvmap;
 
-/*!
- * \brief POD structure for containing a found string
- */
-class found_string
-{
-public:
-	/*!
-	 * \brief The offset of the beginning of the found string relative to the
-	 * start of the stream
-	 */
-	off_t address;
-	/*!
-	 * \brief The extracted string data
-	 */
-	std::vector<uint8_t> data;
-};
-
 #endif

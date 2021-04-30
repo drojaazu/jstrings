@@ -10,7 +10,7 @@ namespace encodings
 	0208 There is extended support for 0213, though we're not going to fiddle with
 	it Maybe we'll make an extended class
 */
-u8 shift_jis::is_valid(u8 const *data)
+u8 encoding_shiftjis::is_valid(u8 const *data)
 {
 	// JIS X 0201 - 8-bit characters (including 7-bit ASCII)
 	// excludes non-printable (control code) and reserved bytes

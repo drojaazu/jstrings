@@ -3,9 +3,9 @@
 namespace encodings
 {
 
-u8 cp932::is_valid(u8 const *data)
+u8 encoding_cp932::is_valid(u8 const *data)
 {
-	u8 valid_count = shift_jis::is_valid(data);
+	u8 valid_count = encoding_shiftjis::is_valid(data);
 	if(valid_count > 0)
 		return valid_count;
 	else {

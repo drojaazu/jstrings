@@ -3,6 +3,12 @@
 #include "enc_eucjp.h"
 #include "enc_cp932.h"
 
+#include <fstream>
+#include <exception>
+#include <iostream>
+#include <iomanip>
+#include <getopt.h>
+
 #ifdef DEBUG
 #include <chrono>
 #endif
@@ -13,6 +19,7 @@ using namespace encodings;
 // 512k of buffer
 static u32 constexpr DATABUFF_SIZE {(1024 * 512)};
 static u8 constexpr DEFAULT_MATCH_LEN {10};
+
 enum enctypes { shift_jis, cp932, eucjp };
 
 struct runtime_config_jstrings {
@@ -21,8 +28,6 @@ struct runtime_config_jstrings {
 	uint match_length = DEFAULT_MATCH_LEN;
 	uint cutoff {0};
 };
-
-void process_args(int argc, char **argv, runtime_config_jstrings &cfg);
 
 static const map<const string, enctypes> enclist{
 	{"shift-jis", shift_jis},
@@ -34,6 +39,10 @@ static const map<const string, enctypes> enclist{
 	{"euc", eucjp},
 	{"euc-jp", eucjp},
 	{"eucjp", eucjp}};
+
+// forward declarations
+void process_args(int argc, char **argv, runtime_config_jstrings &cfg);
+void print_help();
 
 typedef pair<off_t, std::vector<uint8_t>> found_string;
 
@@ -49,9 +58,11 @@ int main(int argc, char **argv)
 	vector<found_string> results;
 
 	istream *indata {nullptr};
-	ifstream infile;
-
+	
 	try {
+
+		ifstream infile;
+		
 		// SETUP
 		process_args(argc, argv, cfg);
 

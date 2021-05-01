@@ -19,6 +19,7 @@ using namespace encodings;
 // 512k of buffer
 static u32 constexpr DATABUFF_SIZE {(1024 * 512)};
 static u8 constexpr DEFAULT_MATCH_LEN {10};
+static char constexpr CUTOFF_INDICATOR[] {"..."};
 
 enum enctypes { shift_jis, cp932, eucjp };
 
@@ -141,6 +142,7 @@ int main(int argc, char **argv)
 		s16 glyphcount{0};
 		u32 this_buffsize = DATABUFF_SIZE;
 		u32 this_buffoffset{0};
+		bool is_cutoff{false};
 
 		while(1) {
 			if(indata->eof())
@@ -189,18 +191,23 @@ int main(int argc, char **argv)
 					if(cfg.cutoff > 0 && glyphcount > cfg.cutoff) {
 						databuff_ptr += validcount;
 						stream_ptr += validcount;
+						is_cutoff = true;
 						continue;
 					}
-					std::copy(&databuff[databuff_ptr],
+					copy(&databuff[databuff_ptr],
 										&databuff[databuff_ptr + validcount],
-										std::back_inserter(workstr.second));
+										back_inserter(workstr.second));
 					databuff_ptr += validcount;
 					stream_ptr += validcount;
 				} else {
 					// data is invalid
-					// if there are enough characters in the work string, add it to the
-					// list
+					// if there are enough characters in the work string,
+					// add it to the list
 					if(glyphcount >= cfg.match_length) {
+						if(is_cutoff) {
+							copy(CUTOFF_INDICATOR, CUTOFF_INDICATOR + sizeof(CUTOFF_INDICATOR), back_inserter(workstr.second));
+							is_cutoff = false;
+						}
 						workstr.second.push_back('\0');
 						results.push_back(workstr);
 					}

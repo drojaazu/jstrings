@@ -1,4 +1,3 @@
-#include "main.h"
 #include "project.hpp"
 #include "enc_shiftjis.h"
 #include "enc_eucjp.h"

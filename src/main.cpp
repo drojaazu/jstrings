@@ -125,23 +125,23 @@ int main(int argc, char **argv)
 		vector<found_string> found_strings;
 		u8 databuff[DATABUFF_SIZE];
 		streamsize bytecount;
-		u32 work_iter;
+		unsigned int work_iter;
 		// where we are in reading the data chunk buffer
-		u32 databuff_ptr{0};
+		size_t databuff_ptr{0};
 		// number of valid bytes returns from the encoding
 		u8 validcount;
 		// work string; where we dump valid bytes
 		found_string workstr;
 		workstr.second.reserve(cfg.match_length);
 		// the databuff_ptr value when we should read another chunk
-		u32 buffborder;
+		unsigned int buffborder;
 		// cache this...
 		u8 enc_max_seqlen = encoding->get_max_seq_len();
 		// tracks where we are in the file
-		u64 stream_ptr{0};
-		s16 glyphcount{0};
-		u32 this_buffsize = DATABUFF_SIZE;
-		u32 this_buffoffset{0};
+		size_t stream_ptr{0};
+		unsigned int glyphcount{0};
+		size_t this_buffsize = DATABUFF_SIZE;
+		size_t this_buffoffset{0};
 		bool is_cutoff{false};
 
 		while(1) {
@@ -187,7 +187,7 @@ int main(int argc, char **argv)
 						// beginning of the string was found
 						workstr.first = stream_ptr;
 					}
-					glyphcount++;
+					++glyphcount;
 					if(cfg.cutoff > 0 && glyphcount > cfg.cutoff) {
 						databuff_ptr += validcount;
 						stream_ptr += validcount;

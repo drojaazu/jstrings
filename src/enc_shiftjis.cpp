@@ -1,4 +1,4 @@
-#include "enc_shiftjis.h"
+#include "enc_shiftjis.hpp"
 
 #include <stdint.h>
 #include <string.h>
@@ -7,21 +7,25 @@ namespace encodings
 {
 /*
 	This supports traditional Shift-JIS, which encompasses JIS X 0201 and JIS X
-	0208 There is extended support for 0213, though we're not going to fiddle with
-	it Maybe we'll make an extended class
+	0208
+
+	SJIS does have extended support for 0213, though we're not going to fiddle
+	with it
+
+	Maybe we'll make an extended class eventually...
 */
-u8 encoding_shiftjis::is_valid(u8 const *data)
+u8 encoding_shiftjis::is_valid(u8 const * data)
 {
 	// JIS X 0201 - 8-bit characters (including 7-bit ASCII)
 	// excludes non-printable (control code) and reserved bytes
 	// (but include tab (0x09))
-	u8 c_hi{*data};
+	u8 c_hi { *data };
 	if((c_hi == 0x09) || (c_hi >= 0x20) & (c_hi <= 0x7e) ||
 		 (c_hi >= 0xa1) & (c_hi <= 0xdf))
 		return 1;
 
 	// JIS X 0208 - 16 bit characters
-	u8 c_lo{*(data + 1)};
+	u8 c_lo { *(data + 1) };
 
 	// sjis lower byte can never be these values
 	if((c_lo >= 0x0) & (c_lo <= 0x3f) || (c_lo == 0x7f) ||
@@ -41,7 +45,8 @@ u8 encoding_shiftjis::is_valid(u8 const *data)
 	// 0x88 - 0x9f to 0xfc
 	// 0x98 - 0x40 to 0x72, 0x9f to 0xfc
 	// 0xea - 0x40 to 0xa4
-	switch(c_hi) {
+	switch(c_hi)
+	{
 		case 0x81:
 			if((c_lo >= 0x40) & (c_lo <= 0xac) || (c_lo >= 0xb8) & (c_lo <= 0xbf) ||
 				 (c_lo >= 0xc8) & (c_lo <= 0xce) || (c_lo >= 0xda) & (c_lo <= 0xe8) ||

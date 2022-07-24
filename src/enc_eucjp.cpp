@@ -1,24 +1,25 @@
-#include "enc_eucjp.h"
+#include "enc_eucjp.hpp"
 
 #include <stdint.h>
 #include <string.h>
 
 namespace encodings
 {
-u8 encoding_eucjp::is_valid(u8 const *data)
+u8 encoding_eucjp::is_valid(u8 const * data)
 {
 
-	u8 c_hi{*data};
+	u8 c_hi { *data };
 
 	// ASCII except control characters
 	if((c_hi == 0x09) || (c_hi >= 0x20) & (c_hi <= 0x7e))
 		return 1;
 
-	u8 c_lo{*(data + 1)};
+	u8 c_lo { *(data + 1) };
 
 	// JIS X 0201
 	// the raw 0201 code prefixed with 0x8E
-	if(c_hi == 0x8e) {
+	if(c_hi == 0x8e)
+	{
 		if((c_lo >= 0xa1) & (c_lo <= 0xdf))
 			return 2;
 	}
@@ -37,7 +38,8 @@ u8 encoding_eucjp::is_valid(u8 const *data)
 	// 0xcf - 0xa1 to 0xd3
 	// 0xf4 - 0xa1 to 0xa6
 	*/
-	switch(c_hi) {
+	switch(c_hi)
+	{
 		case 0xa2:
 			if((c_lo >= 0xa1) & (c_lo <= 0xae) || (c_lo >= 0xba) & (c_lo <= 0xc1) ||
 				 (c_lo >= 0xca) & (c_lo <= 0xd0) || (c_lo >= 0xdc) & (c_lo <= 0xea) ||
@@ -89,7 +91,8 @@ u8 encoding_eucjp::is_valid(u8 const *data)
 	// JIS X 0212
 	// 0208 extension, so only a few ku are present
 	// 0208 code prefixed by 0x8f
-	if(c_hi == 0x8f) {
+	if(c_hi == 0x8f)
+	{
 		u8 c_md = c_lo;
 		c_lo = *(data + 2);
 
@@ -104,7 +107,8 @@ u8 encoding_eucjp::is_valid(u8 const *data)
 	// 0xab - 0xa1 to 0xbb, 0xbd to 0xc3, 0xc5 to 0xf7
 	// 0xed - 0xa1 to 0xe3
 	*/
-		switch(c_md) {
+		switch(c_md)
+		{
 			case 0xa2:
 				if(((c_lo >= 0xaf) & (c_lo <= 0xb9)) ||
 					 ((c_lo >= 0xc2) & (c_lo <= 0xc4)) ||

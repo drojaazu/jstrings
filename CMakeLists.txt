@@ -3,7 +3,7 @@ include(GNUInstallDirs)
 
 # define project
 cmake_minimum_required(VERSION 3.5)
-project(jstrings VERSION 1.2 LANGUAGES CXX)
+project(jstrings VERSION 1.5 LANGUAGES CXX)
 set(PROJECT_CONTACT "Damian R (damian@sudden-desu.net)")
 set(PROJECT_WEBSITE "https://github.com/drojaazu")
 

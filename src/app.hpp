@@ -6,9 +6,9 @@
 */
 namespace APP {
 	static unsigned int const VERSION_MAJOR{1};
-	static unsigned int const VERSION_MINOR{2};
+	static unsigned int const VERSION_MINOR{5};
 	static unsigned int const VERSION_PATCH{};
-	static char const * VERSION{"1.2"};
+	static char const * VERSION{"1.5"};
 
 	static wchar_t const * NAME{L"jstrings"};
 	static wchar_t const * CONTACT{L"Damian R (damian@sudden-desu.net)"};

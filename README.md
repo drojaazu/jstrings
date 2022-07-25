@@ -28,6 +28,11 @@ Set minimum number of characters to match as a valid string. Optional; default i
 
 Limit the output to the specified number of characters for a string. This is useful for "previewing" a file which may have large blocks of junk data that happen to fall within the range of valid encoding values. Optional; default is no cutoff.
 
+	-l
+	--multiline
+
+Do not break the string on CR/LF characters. Such characters will instead appear as /0D and /0A respectively in the output string.
+
 ## Output
 Data is output in its original encoding without any conversion. Other tools, such as iconv, can do conversion to something more useful (such as UTF8). For example:
 

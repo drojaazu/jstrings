@@ -1,13 +1,16 @@
-#include "project.hpp"
-#include "enc_shiftjis.h"
-#include "enc_eucjp.h"
-#include "enc_cp932.h"
+#include "app.hpp"
+#include "enc_cp932.hpp"
+#include "enc_eucjp.hpp"
+#include "enc_shiftjis.hpp"
+#include "usage.hpp"
 
-#include <fstream>
 #include <exception>
-#include <iostream>
-#include <iomanip>
+#include <fstream>
 #include <getopt.h>
+#include <iomanip>
+#include <iostream>
+#include <map>
+#include <vector>
 
 #ifdef DEBUG
 #include <chrono>
@@ -17,53 +20,57 @@ using namespace std;
 using namespace encodings;
 
 // 512k of buffer
-static u32 constexpr DATABUFF_SIZE {(1024 * 512)};
-static u8 constexpr DEFAULT_MATCH_LEN {10};
-static char constexpr CUTOFF_INDICATOR[] {"..."};
+static u32 constexpr DATABUFF_SIZE { (1024 * 512) };
+static u8 constexpr DEFAULT_MATCH_LEN { 10 };
+static char constexpr CUTOFF_INDICATOR[] { "..." };
 
-enum enctypes { shift_jis, cp932, eucjp };
-
-struct runtime_config_jstrings {
-	string infile;
-	string encoding;
-	uint match_length = DEFAULT_MATCH_LEN;
-	uint cutoff {0};
+enum enctypes
+{
+	shift_jis,
+	cp932,
+	eucjp
 };
 
-static const map<const string, enctypes> enclist{
-	{"shift-jis", shift_jis},
-	{"shiftjis", shift_jis},
-	{"sjis", shift_jis},
-	{"cp932", cp932},
-	{"windows932", cp932},
-	{"windows31j", cp932},
-	{"euc", eucjp},
-	{"euc-jp", eucjp},
-	{"eucjp", eucjp}};
+struct runtime_config_jstrings
+{
+	string infile;
+	string encoding;
+	uint match_length { DEFAULT_MATCH_LEN };
+	uint cutoff { 0 };
+	bool multiline { false };
+};
+
+static const map<const string, enctypes> enclist {
+	{ "shift-jis", shift_jis }, { "shiftjis", shift_jis },
+	{ "sjis", shift_jis },			{ "cp932", cp932 },
+	{ "windows932", cp932 },		{ "windows31j", cp932 },
+	{ "euc", eucjp },						{ "euc-jp", eucjp },
+	{ "eucjp", eucjp }
+};
 
 // forward declarations
-void process_args(int argc, char **argv, runtime_config_jstrings &cfg);
-void print_help();
+void process_args(int argc, char ** argv, runtime_config_jstrings & cfg);
 
-typedef pair<off_t, std::vector<uint8_t>> found_string;
+typedef pair<off_t, vector<uint8_t>> found_string;
 
-int main(int argc, char **argv)
+int main(int argc, char ** argv)
 {
 	runtime_config_jstrings cfg;
 
-	encoding *encoding {nullptr};
+	encoding * encoding { nullptr };
 	encoding_shiftjis enc_sjis;
 	encoding_eucjp enc_eucjp;
 	encoding_cp932 enc_cp932;
 
 	vector<found_string> results;
 
-	istream *indata {nullptr};
-	
-	try {
+	istream * indata { nullptr };
+
+	try
+	{
 
 		ifstream infile;
-		
+
 		// SETUP
 		process_args(argc, argv, cfg);
 
@@ -73,9 +80,11 @@ int main(int argc, char **argv)
 
 		if(cfg.infile.empty())
 			indata = &cin;
-		else {
+		else
+		{
 			infile = ifstream(cfg.infile);
-			if(!infile.good()) {
+			if(!infile.good())
+			{
 				throw invalid_argument("File could not be opened");
 			}
 
@@ -85,12 +94,15 @@ int main(int argc, char **argv)
 
 		if(cfg.encoding.empty())
 			encoding = &enc_sjis;
-		else {
-			if(enclist.find(cfg.encoding) == enclist.end()) {
+		else
+		{
+			if(enclist.find(cfg.encoding) == enclist.end())
+			{
 				throw invalid_argument("Invalid encoding specified");
 			}
 
-			switch(enclist.at(cfg.encoding)) {
+			switch(enclist.at(cfg.encoding))
+			{
 				case enctypes::shift_jis:
 					encoding = &enc_sjis;
 					break;
@@ -107,8 +119,8 @@ int main(int argc, char **argv)
 		}
 
 #ifdef DEBUG
-		std::chrono::high_resolution_clock::time_point t1 =
-				std::chrono::high_resolution_clock::now();
+		chrono::high_resolution_clock::time_point t1 =
+				chrono::high_resolution_clock::now();
 #endif
 
 		// SEARCH
@@ -127,7 +139,7 @@ int main(int argc, char **argv)
 		streamsize bytecount;
 		unsigned int work_iter;
 		// where we are in reading the data chunk buffer
-		size_t databuff_ptr{0};
+		size_t databuff_ptr { 0 };
 		// number of valid bytes returns from the encoding
 		u8 validcount;
 		// work string; where we dump valid bytes
@@ -138,13 +150,17 @@ int main(int argc, char **argv)
 		// cache this...
 		u8 enc_max_seqlen = encoding->get_max_seq_len();
 		// tracks where we are in the file
-		size_t stream_ptr{0};
-		unsigned int glyphcount{0};
+		size_t stream_ptr { 0 };
+		unsigned int glyphcount { 0 };
 		size_t this_buffsize = DATABUFF_SIZE;
-		size_t this_buffoffset{0};
-		bool is_cutoff{false};
+		size_t this_buffoffset { 0 };
+		bool is_cutoff { false };
 
-		while(1) {
+		char const * multiline_0d = "\\0D";
+		char const * multiline_0a = "\\0A";
+
+		while(1)
+		{
 			if(indata->eof())
 				break;
 			// read a chunk and count how many bytes were actually captured
@@ -157,11 +173,13 @@ int main(int argc, char **argv)
 			// cache this too...
 			buffborder = bytecount - enc_max_seqlen;
 
-			for(databuff_ptr = 0; databuff_ptr < bytecount;) {
+			for(databuff_ptr = 0; databuff_ptr < bytecount;)
+			{
 				// check the databuff pointer
 				// is it within bytecount - (encoding max_seq_len) ?
 				// if so, repoint the stream and read another chunk
-				if(databuff_ptr >= buffborder) {
+				if(databuff_ptr >= buffborder)
+				{
 					// step the stream pointer back if needed
 					// indata->seekg(0 - (bytecount - databuff_ptr), ios::cur);
 					// well of course we can't seekg on stdin, so let's make things more
@@ -169,8 +187,8 @@ int main(int argc, char **argv)
 					// we'll copy the remaining bytes to the beginning of the buffer
 					// then have chunk reader bring in that many less bytes
 					// what a mess...
-					std::copy(&databuff[DATABUFF_SIZE - (bytecount - databuff_ptr)],
-										&databuff[DATABUFF_SIZE], &databuff[0]);
+					copy(&databuff[DATABUFF_SIZE - (bytecount - databuff_ptr)],
+							 &databuff[DATABUFF_SIZE], &databuff[0]);
 					this_buffsize = DATABUFF_SIZE - (bytecount - databuff_ptr);
 					this_buffoffset = bytecount - databuff_ptr;
 
@@ -178,34 +196,66 @@ int main(int argc, char **argv)
 					break;
 				}
 
-				validcount = encoding->is_valid(&databuff[databuff_ptr]);
-				if(validcount > 0) {
+				// the multiline implementation is kind of hack-y for now, but it will
+				// work until the state machine rewrite in the next major version
+				if(cfg.multiline &&
+					 (databuff[databuff_ptr] == 0x0d || databuff[databuff_ptr] == 0x0a))
+				{
+					validcount = 1;
+				}
+				else
+				{
+					validcount = encoding->is_valid(&databuff[databuff_ptr]);
+				}
+
+				if(validcount > 0)
+				{
 					// the data is a valid glyph
 					// add to the work string
-					if(glyphcount == 0) {
+					if(glyphcount == 0)
+					{
 						// this is the first character, so store the address where the
 						// beginning of the string was found
 						workstr.first = stream_ptr;
 					}
 					++glyphcount;
-					if(cfg.cutoff > 0 && glyphcount > cfg.cutoff) {
+					if(cfg.cutoff > 0 && glyphcount > cfg.cutoff)
+					{
 						databuff_ptr += validcount;
 						stream_ptr += validcount;
 						is_cutoff = true;
 						continue;
 					}
-					copy(&databuff[databuff_ptr],
-										&databuff[databuff_ptr + validcount],
-										back_inserter(workstr.second));
+					if(cfg.multiline &&
+						 (databuff[databuff_ptr] == 0x0d || databuff[databuff_ptr] == 0x0a))
+					{
+						if(databuff[databuff_ptr] == 0x0a)
+							copy(multiline_0a, multiline_0a + 3,
+									 back_inserter(workstr.second));
+						else
+							copy(multiline_0d, multiline_0d + 3,
+									 back_inserter(workstr.second));
+					}
+					else
+					{
+						copy(&databuff[databuff_ptr], &databuff[databuff_ptr + validcount],
+								 back_inserter(workstr.second));
+					}
 					databuff_ptr += validcount;
 					stream_ptr += validcount;
-				} else {
+				}
+				else
+				{
 					// data is invalid
 					// if there are enough characters in the work string,
 					// add it to the list
-					if(glyphcount >= cfg.match_length) {
-						if(is_cutoff) {
-							copy(CUTOFF_INDICATOR, CUTOFF_INDICATOR + sizeof(CUTOFF_INDICATOR), back_inserter(workstr.second));
+					if(glyphcount >= cfg.match_length)
+					{
+						if(is_cutoff)
+						{
+							copy(CUTOFF_INDICATOR,
+									 CUTOFF_INDICATOR + sizeof(CUTOFF_INDICATOR),
+									 back_inserter(workstr.second));
 							is_cutoff = false;
 						}
 						workstr.second.push_back('\0');
@@ -213,7 +263,8 @@ int main(int argc, char **argv)
 					}
 					++databuff_ptr;
 					++stream_ptr;
-					if(glyphcount > 0) {
+					if(glyphcount > 0)
+					{
 						glyphcount = 0;
 						workstr.second.clear();
 						workstr.second.reserve(cfg.match_length);
@@ -223,14 +274,14 @@ int main(int argc, char **argv)
 		}
 
 #ifdef DEBUG
-		std::chrono::high_resolution_clock::time_point t2 =
-				std::chrono::high_resolution_clock::now();
+		chrono::high_resolution_clock::time_point t2 =
+				chrono::high_resolution_clock::now();
 		auto duration =
-				std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
+				chrono::duration_cast<chrono::milliseconds>(t2 - t1).count();
 
 		cerr << "Search duration: " << duration << endl;
 
-		t1 = std::chrono::high_resolution_clock::now();
+		t1 = chrono::high_resolution_clock::now();
 #endif
 
 		// RESULTS
@@ -238,35 +289,55 @@ int main(int argc, char **argv)
 
 		cout << showbase << internal << setfill('0') << hex;
 
-		for(found_string this_result : results) {
+		for(found_string this_result : results)
+		{
 			cout << this_result.first << " " << &this_result.second[0] << endl;
 		}
 
 		return 0;
 	}
-	catch(const exception &e) {
+	catch(const exception & e)
+	{
 		cerr << "Fatal error: " << e.what() << endl;
 		return -1;
 	}
 }
 
-void process_args(int argc, char **argv, runtime_config_jstrings &cfg)
+void process_args(int argc, char ** argv, runtime_config_jstrings & cfg)
 {
-	const char *const short_opts = ":hm:c:e:";
-	const option long_opts[] = {{"help", no_argument, nullptr, 'h'},
-															{"match-length", required_argument, nullptr, 'm'},
-															{"cutoff", required_argument, nullptr, 'c'},
-															{"encoding", required_argument, nullptr, 'e'},
-															{nullptr, 0, nullptr, 0}};
+	string const short_opts { ":hm:c:e:l" };
+	vector<option> const long_opts {
+		{ "help", no_argument, nullptr, 'h' },
+		{ "match-length", required_argument, nullptr, 'm' },
+		{ "cutoff", required_argument, nullptr, 'c' },
+		{ "encoding", required_argument, nullptr, 'e' },
+		{ "multiline", no_argument, nullptr, 'l' },
+		{ 0, 0, 0, 0 }
+	};
 
-	while(true) {
+	vector<option_details> const opt_details {
+		{ false, L"Display usage", nullptr },
+		{ false,
+			L"Specify number of sequential characters required to qualify as a "
+			L"string ",
+			nullptr },
+		{ false,
+			L"Specify maximum number of characters to display in a single string",
+			nullptr },
+		{ false, L"Specify text encoding to use", L"shiftjis|cp932|eucjp" },
+		{ false, L"Do not split multiline strings", nullptr }
+	};
+
+	while(true)
+	{
 		const auto this_opt =
-			getopt_long(argc, argv, short_opts, long_opts, nullptr);
+				getopt_long(argc, argv, short_opts.data(), long_opts.data(), nullptr);
 
 		if(this_opt == -1)
 			break;
 
-		switch(this_opt) {
+		switch(this_opt)
+		{
 			case 'm':
 				cfg.match_length = strtoul(optarg, nullptr, 10);
 				break;
@@ -276,44 +347,31 @@ void process_args(int argc, char **argv, runtime_config_jstrings &cfg)
 			case 'e':
 				cfg.encoding = optarg;
 				break;
+			case 'l':
+				cfg.multiline = true;
+				break;
 			case 'h':
-				print_help();
+				show_usage(long_opts.data(), opt_details.data(), wcout);
 				exit(0);
 				break;
 			case ':':
 				cerr << "Missing argument" << endl;
-				print_help();
 				exit(1);
 				break;
 			case '?':
 				cerr << "Invalid option" << endl;
-				print_help();
 				exit(1);
 				break;
 			default:
-				print_help();
+				show_usage(long_opts.data(), opt_details.data(), wcout);
 				exit(1);
 				break;
 		}
 	}
 
-	if(optind < argc) {
+	if(optind < argc)
+	{
 		// only read the first non-option argument, assuming it is input filename
 		cfg.infile = argv[optind];
 	}
-}
-
-void print_help()
-{
-	cout << PROJECT::PROJECT_NAME << " - ver. " << PROJECT::VERSION << endl;
-	cout << PROJECT::PROJECT_CONTACT << " - " << PROJECT::PROJECT_WEBSITE << endl << endl;
-	cout << "Valid options:" << endl;
-	cout << "  --encoding, -e         Specify encoding to use" << endl;
-	cout << "         (Valid options: shiftjis, cp932, eucjp)" << endl;
-	cout << "  --match-length, -m     Specify number of sequential characters "
-					"required to qualify as a string"
-			 << endl;
-	cout << "  --cutoff, -c       Specify maximum number of characters to "
-					"display in a single string"
-			 << endl;
 }

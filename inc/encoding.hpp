@@ -7,7 +7,7 @@
 
 #ifndef ENCODING_H
 #define ENCODING_H
-#include "types.h"
+#include "types.hpp"
 
 /*!
  * \brief Abstract for encoding classes
@@ -15,17 +15,23 @@
 class encoding
 {
 public:
-	encoding(u8 max_seq_len) { this->max_seq_len = max_seq_len; }
+	encoding(u8 max_seq_len)
+	{
+		this->max_seq_len = max_seq_len;
+	}
 	encoding() = delete;
-	virtual ~encoding(){};
+	virtual ~encoding() {};
 
 	/*!
 	 * \brief Determines if the given bytes are a valid byte sequence for the
 	 * encoding. Returns the number of valid bytes if true.
 	 */
-	virtual u8 is_valid(u8 const *data) = 0;
+	virtual u8 is_valid(u8 const * data) = 0;
 
-	const u8 get_max_seq_len() { return this->max_seq_len; }
+	const u8 get_max_seq_len()
+	{
+		return this->max_seq_len;
+	}
 
 protected:
 	u8 max_seq_len;

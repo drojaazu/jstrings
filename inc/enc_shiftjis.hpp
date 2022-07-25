@@ -7,7 +7,7 @@
 
 #ifndef ENC_SHIFTJIS_H
 #define ENC_SHIFTJIS_H
-#include "encoding.h"
+#include "encoding.hpp"
 
 namespace encodings
 {
@@ -15,9 +15,9 @@ namespace encodings
 class encoding_shiftjis : public encoding
 {
 public:
-	encoding_shiftjis() : encoding(2){};
-	u8 is_valid(u8 const *data);
-	~encoding_shiftjis(){};
+	encoding_shiftjis() : encoding(2) {};
+	u8 is_valid(u8 const * data);
+	~encoding_shiftjis() {};
 };
 
 } // namespace encodings

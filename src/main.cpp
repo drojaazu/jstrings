@@ -35,8 +35,9 @@ struct runtime_config_jstrings
 {
 	string infile;
 	string encoding;
-	uint match_length = DEFAULT_MATCH_LEN;
+	uint match_length { DEFAULT_MATCH_LEN };
 	uint cutoff { 0 };
+	bool multiline { false };
 };
 
 static const map<const string, enctypes> enclist {
@@ -155,6 +156,9 @@ int main(int argc, char ** argv)
 		size_t this_buffoffset { 0 };
 		bool is_cutoff { false };
 
+		char const * multiline_0d = "\\0D";
+		char const * multiline_0a = "\\0A";
+
 		while(1)
 		{
 			if(indata->eof())
@@ -192,7 +196,18 @@ int main(int argc, char ** argv)
 					break;
 				}
 
-				validcount = encoding->is_valid(&databuff[databuff_ptr]);
+				// the multiline implementation is kind of hack-y for now, but it will
+				// work until the state machine rewrite in the next major version
+				if(cfg.multiline &&
+					 (databuff[databuff_ptr] == 0x0d || databuff[databuff_ptr] == 0x0a))
+				{
+					validcount = 1;
+				}
+				else
+				{
+					validcount = encoding->is_valid(&databuff[databuff_ptr]);
+				}
+
 				if(validcount > 0)
 				{
 					// the data is a valid glyph
@@ -211,8 +226,21 @@ int main(int argc, char ** argv)
 						is_cutoff = true;
 						continue;
 					}
-					copy(&databuff[databuff_ptr], &databuff[databuff_ptr + validcount],
-							 back_inserter(workstr.second));
+					if(cfg.multiline &&
+						 (databuff[databuff_ptr] == 0x0d || databuff[databuff_ptr] == 0x0a))
+					{
+						if(databuff[databuff_ptr] == 0x0a)
+							copy(multiline_0a, multiline_0a + 3,
+									 back_inserter(workstr.second));
+						else
+							copy(multiline_0d, multiline_0d + 3,
+									 back_inserter(workstr.second));
+					}
+					else
+					{
+						copy(&databuff[databuff_ptr], &databuff[databuff_ptr + validcount],
+								 back_inserter(workstr.second));
+					}
 					databuff_ptr += validcount;
 					stream_ptr += validcount;
 				}
@@ -277,12 +305,13 @@ int main(int argc, char ** argv)
 
 void process_args(int argc, char ** argv, runtime_config_jstrings & cfg)
 {
-	string const short_opts { ":hm:c:e:" };
+	string const short_opts { ":hm:c:e:l" };
 	vector<option> const long_opts {
 		{ "help", no_argument, nullptr, 'h' },
 		{ "match-length", required_argument, nullptr, 'm' },
 		{ "cutoff", required_argument, nullptr, 'c' },
 		{ "encoding", required_argument, nullptr, 'e' },
+		{ "multiline", no_argument, nullptr, 'l' },
 		{ 0, 0, 0, 0 }
 	};
 
@@ -295,7 +324,8 @@ void process_args(int argc, char ** argv, runtime_config_jstrings & cfg)
 		{ false,
 			L"Specify maximum number of characters to display in a single string",
 			nullptr },
-		{ false, L"Specify text encoding to use", L"shiftjis|cp932|eucjp" }
+		{ false, L"Specify text encoding to use", L"shiftjis|cp932|eucjp" },
+		{ false, L"Do not split multiline strings", nullptr }
 	};
 
 	while(true)
@@ -316,6 +346,9 @@ void process_args(int argc, char ** argv, runtime_config_jstrings & cfg)
 				break;
 			case 'e':
 				cfg.encoding = optarg;
+				break;
+			case 'l':
+				cfg.multiline = true;
 				break;
 			case 'h':
 				show_usage(long_opts.data(), opt_details.data(), wcout);

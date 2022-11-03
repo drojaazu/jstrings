@@ -8,7 +8,7 @@
 #ifndef ENC_CP932_H
 #define ENC_CP932_H
 
-#include "enc_shiftjis.h"
+#include "enc_shiftjis.hpp"
 
 namespace encodings
 {
@@ -16,8 +16,8 @@ namespace encodings
 class encoding_cp932 : public encoding_shiftjis
 {
 public:
-	u8 is_valid(u8 const *data);
-	~encoding_cp932(){};
+	u8 is_valid(u8 const *data) override;
+	~encoding_cp932()override = default;
 };
 
 } // namespace encodings

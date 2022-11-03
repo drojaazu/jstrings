@@ -6,7 +6,7 @@
  */
 #ifndef ENC_EUCJP_H
 #define ENC_EUCJP_H
-#include "encoding.h"
+#include "encoding.hpp"
 
 namespace encodings
 {
@@ -14,9 +14,11 @@ namespace encodings
 class encoding_eucjp : public encoding
 {
 public:
-	encoding_eucjp() : encoding(3){};
-	u8 is_valid(u8 const *data);
-	~encoding_eucjp(){};
+	encoding_eucjp() :
+			encoding(3) {};
+	u8 is_valid(u8 const * data) override;
+	~encoding_eucjp() override = default;
+	;
 };
 
 } // namespace encodings

@@ -5,16 +5,19 @@
 
 namespace encodings
 {
-u8 encoding_eucjp::is_valid (u8 const * data)
+size_t eucjp_validator::is_valid (byte_t const * data) const
 {
 
 	u8 c_hi {*data};
 
 	// ASCII except control characters
-	if ((c_hi == 0x09) || (c_hi >= 0x20) & (c_hi <= 0x7e))
+	if ((c_hi == 0x09) || ((c_hi >= 0x20) & (c_hi <= 0x7e)) || (m_include_crlf && (c_hi == 0x0a)))
 		return 1;
 
 	u8 c_lo {*(data + 1)};
+
+	if (m_include_crlf && ((c_hi == 0x0d) && (c_lo == 0x0a)))
+		return 2;
 
 	// JIS X 0201
 	// the raw 0201 code prefixed with 0x8E

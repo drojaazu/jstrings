@@ -1,23 +1,17 @@
-/*!
- * \author Damian Rogers (damian@sudden-desu.net)
- * \version 1.1
- * \date 2019.12.01
- * \copyright MIT License
- */
-#ifndef ENC_EUCJP_H
-#define ENC_EUCJP_H
+#ifndef ENC_EUCJP_HPP
+#define ENC_EUCJP_HPP
 #include "encoding.hpp"
 
 namespace encodings
 {
 
-class encoding_eucjp : public encoding
+class eucjp_validator : public encoding_validator
 {
 public:
-	encoding_eucjp() :
-			encoding(3) {};
-	u8 is_valid(u8 const * data) override;
-	~encoding_eucjp() override = default;
+	eucjp_validator() :
+			encoding_validator (3, "EUC-JP") {};
+	size_t is_valid (byte_t const * data) const override;
+	~eucjp_validator() override = default;
 	;
 };
 

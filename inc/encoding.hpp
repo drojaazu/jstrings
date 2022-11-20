@@ -1,40 +1,58 @@
-/*!
- * \author Damian Rogers (damian@sudden-desu.net)
- * \version 1.1
- * \date 2019.12.01
- * \copyright MIT License
- */
-
-#ifndef ENCODING_H
-#define ENCODING_H
+#ifndef ENCODING_HPP
+#define ENCODING_HPP
 #include "types.hpp"
 
 /*!
  * \brief Abstract for encoding classes
  */
-class encoding
+class encoding_validator
 {
-public:
-	encoding(u8 max_seq_len)
+protected:
+	size_t m_max_seq_len;
+	char const * m_iconv_code;
+	bool m_include_crlf;
+
+	encoding_validator (size_t max_seq_len, char const * iconv_code) :
+			m_max_seq_len {max_seq_len},
+			m_iconv_code {iconv_code},
+			m_include_crlf {false}
 	{
-		this->max_seq_len = max_seq_len;
 	}
-	encoding() = delete;
-	virtual ~encoding() = default;
+
+public:
+	encoding_validator() = delete;
+	virtual ~encoding_validator() = default;
 
 	/*!
 	 * \brief Determines if the given bytes are a valid byte sequence for the encoding.
 	 * Returns the number of valid bytes if true.
 	 */
-	virtual u8 is_valid(u8 const * data) = 0;
+	virtual size_t is_valid (byte_t const * data) const = 0;
 
-	const u8 get_max_seq_len()
+	size_t operator() (byte_t const * data) const
 	{
-		return this->max_seq_len;
+		return is_valid (data);
 	}
 
-protected:
-	u8 max_seq_len;
+	[[nodiscard]] size_t max_seq_len() const
+	{
+		return m_max_seq_len;
+	}
+
+	[[nodiscard]] char const * iconv_code() const
+	{
+		return m_iconv_code;
+	}
+
+	void set_include_crlf (bool include_crlf)
+	{
+		m_include_crlf = include_crlf;
+	}
+
+	[[nodiscard]] bool include_crlf() const
+	{
+		return m_include_crlf;
+	}
 };
 
 #endif // ENCODING_H

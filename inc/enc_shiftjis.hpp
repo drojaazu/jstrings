@@ -1,26 +1,20 @@
-/*!
- * \author Damian Rogers (damian@sudden-desu.net)
- * \version 1.1
- * \date 2019.12.01
- * \copyright MIT License
- */
-
-#ifndef ENC_SHIFTJIS_H
-#define ENC_SHIFTJIS_H
+#ifndef ENC_SHIFTJIS_HPP
+#define ENC_SHIFTJIS_HPP
 #include "encoding.hpp"
 
 namespace encodings
 {
 
-class encoding_shiftjis : public encoding
+class shiftjis_validator : public encoding_validator
 {
 public:
-	encoding_shiftjis() :
-			encoding(2) {};
-	u8 is_valid(u8 const * data) override;
-	~encoding_shiftjis() override = default;
+	shiftjis_validator() :
+			encoding_validator (2, "SHIFT-JIS") {};
+	size_t is_valid (byte_t const * data) const override;
+	~shiftjis_validator() override = default;
 	;
 };
 
 } // namespace encodings
-#endif // ENC_SHIFTJIS_H
+
+#endif

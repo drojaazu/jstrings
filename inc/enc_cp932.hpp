@@ -1,23 +1,21 @@
-/*!
- * \author Damian Rogers (damian@sudden-desu.net)
- * \version 1.1
- * \date 2019.12.01
- * \copyright MIT License
- */
-
-#ifndef ENC_CP932_H
-#define ENC_CP932_H
+#ifndef ENC_CP932_HPP
+#define ENC_CP932_HPP
 
 #include "enc_shiftjis.hpp"
 
 namespace encodings
 {
 
-class encoding_cp932 : public encoding_shiftjis
+class cp932_validator : public shiftjis_validator
 {
 public:
-	u8 is_valid(u8 const *data) override;
-	~encoding_cp932()override = default;
+	cp932_validator()
+	{
+		m_iconv_code = "CP932";
+	}
+
+	size_t is_valid (byte_t const * data) const override;
+	~cp932_validator() override = default;
 };
 
 } // namespace encodings

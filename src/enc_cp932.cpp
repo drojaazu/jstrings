@@ -1,9 +1,9 @@
 #include "enc_cp932.hpp"
 
-namespace encodings
+namespace motoi
 {
 
-size_t cp932_validator::is_valid (byte_t const * data) const
+uint cp932_validator::is_valid (byte_t const * data) const
 {
 	u8 valid_count = shiftjis_validator::is_valid (data);
 	if (valid_count > 0)
@@ -14,12 +14,12 @@ size_t cp932_validator::is_valid (byte_t const * data) const
 		u8 c_lo {*(data + 1)};
 
 		/*
-						ku 13 - lead byte 0x87 - NEC tokushu moji
-										0x40 to 0x5d, 0x5f to 0x75, 0x7e, 0x80 to 0x8f, 0x93, 0x94,
-			 0x98, 0x99 ku 89-92 - lead byte 0xed, 0xee - NEC sentei IBM kakuchou moji
-										0x40 to 0x7e, 0x80 to 0xfc
-						ku 115-119 - lead byte 0xfa to 0xfc - IBM kakuchou moji
-										0x40 to 0x7e, 0x80 to 0xfc (except 0xfc: 0x40 to 0x4b)
+			ku 13 - lead byte 0x87 - NEC tokushu moji
+				0x40 to 0x5d, 0x5f to 0x75, 0x7e, 0x80 to 0x8f, 0x93, 0x94,
+				0x98, 0x99 ku 89-92 - lead byte 0xed, 0xee - NEC sentei IBM kakuchou moji
+				0x40 to 0x7e, 0x80 to 0xfc
+			ku 115-119 - lead byte 0xfa to 0xfc - IBM kakuchou moji
+				0x40 to 0x7e, 0x80 to 0xfc (except 0xfc: 0x40 to 0x4b)
 		*/
 		switch (c_hi)
 		{
@@ -42,4 +42,4 @@ size_t cp932_validator::is_valid (byte_t const * data) const
 	}
 	return 0;
 }
-} // namespace encodings
+} // namespace motoi

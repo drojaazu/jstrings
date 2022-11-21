@@ -1,13 +1,14 @@
 /**
  * @file usage.hpp
- * @author Damian Rogers (damian@motoi.pro)
- * @copyright Motoi Productions / Released under MIT License
+ * @author Motoi Productions (Damian Rogers damian@motoi.pro)
  * @brief Display program options/usage
  *
  * Updates:
  * 20220415 Initial
  * 20220722 Using const in show_usage parameters
  * 20220914 Added show_version
+ * 20221118 Added copyright field; change to non-wide characters to properly support
+ * 	UTF-8; updates to match changes to match app.hpp.cfg
  */
 
 #ifndef __MOTOI__USAGE_HPP
@@ -18,6 +19,8 @@
 #include <ostream>
 #include <sstream>
 
+namespace motoi
+{
 struct option_details
 {
 	bool const required;
@@ -30,7 +33,7 @@ struct option_details
  *
  * @param output stream to write the version
  */
-void show_version (std::wostream & output);
+void show_version (std::ostream & output);
 
 /**
  * @brief Displays program options and usage
@@ -40,6 +43,8 @@ void show_version (std::wostream & output);
  * order as @c opts
  * @param output stream to write the usage
  */
-void show_usage (option const * opts, option_details const * details, std::wostream & output = std::wcout);
+void show_usage (option const * opts, option_details const * details, std::ostream & output = std::cout);
+
+} // namespace motoi
 
 #endif

@@ -3,11 +3,12 @@ include(CheckIncludeFiles)
 # define project
 cmake_minimum_required(VERSION 3.5)
 
-project(jstrings VERSION 1.5 LANGUAGES CXX)
+project(jstrings VERSION 1.6 LANGUAGES CXX)
 
 set(PROJECT_CONTACT "Damian R (damian@motoi.pro)")
 set(PROJECT_WEBSITE "https://github.com/drojaazu")
 set(PROJECT_COPYRIGHT "©2018 Motoi Productions / Released under MIT License")
+set(PROJECT_BRIEF "A tool for finding JIS-based Japanese text in binary data.")
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/app.hpp.cfg" "${CMAKE_CURRENT_SOURCE_DIR}/src/app.hpp" ESCAPE_QUOTES)
 

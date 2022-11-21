@@ -18,6 +18,8 @@
 #include <system_error>
 #include <vector>
 
+namespace motoi
+{
 class uniconv
 {
 private:
@@ -101,5 +103,6 @@ public:
 		return convert (in.data(), in.size());
 	}
 };
+} // namespace motoi
 
 #endif

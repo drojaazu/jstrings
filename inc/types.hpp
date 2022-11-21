@@ -1,6 +1,7 @@
 /**
  * @file types.hpp
- * @author Motoi Productions (Damian Rogers damian@motoi.pro)
+ * @author Damian Rogers (damian@motoi.pro)
+ * @copyright Motoi Productions / Released under MIT License
  * @brief Commonly used typedefs
  *
  * Updates:

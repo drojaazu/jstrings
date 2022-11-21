@@ -1,8 +1,12 @@
 
 #include "jstrings.hpp"
+#include "enc_validator.hpp"
 #include <cstring>
 #include <string>
 #include <vector>
+
+namespace motoi
+{
 
 using namespace std;
 
@@ -90,10 +94,10 @@ vector<found_string> find (istream & is, encoding_validator const & enc, size_t 
 		p_buffer_end = p_buffer + buffer_read_size;
 		p_curr = p_buffer;
 
-		// if we're on the final buffer read (is.eof())
-		// or if the data we read is smaller than the max sequence
-		// length of the encoding, then don't bother setting
-		// a boundary
+		/*
+			if we're on the final buffer read (is.eof()) or if the data we read is smaller
+			than the max sequence length of the encoding, then don't bother setting a boundary
+		*/
 		if ((buffer_read_size < enc.max_seq_len()) || is.eof())
 			p_boundary = p_buffer + buffer_read_size;
 		else
@@ -180,3 +184,4 @@ vector<found_string> find (istream & is, encoding_validator const & enc, size_t 
 
 	return out;
 }
+} // namespace motoi

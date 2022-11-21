@@ -1,23 +1,22 @@
 #include "enc_shiftjis.hpp"
 
-#include <cstdint>
-#include <cstring>
+namespace motoi
+{
 
-namespace encodings
+uint shiftjis_validator::is_valid (byte_t const * data) const
 {
-/*
-				This supports traditional Shift-JIS, which encompasses JIS X 0201 and
-	 JIS X 0208 There is extended support for 0213, though we're not going to
-	 fiddle with it Maybe we'll make an extended class
-*/
-size_t shiftjis_validator::is_valid (byte_t const * data) const
-{
-	// JIS X 0201 - 8-bit characters (including 7-bit ASCII)
-	// excludes non-printable (control code) and reserved bytes
-	// (but include tab (0x09))
+	/*
+		JIS X 0201 - 8-bit characters (including 7-bit ASCII)
+		excludes non-printable (control code) and reserved bytes
+		(but include tab (0x09))
+	*/
 	u8 c_hi {*data};
-	if ((c_hi == 0x09) || (c_hi >= 0x20) & (c_hi <= 0x7e) || (c_hi >= 0xa1) & (c_hi <= 0xdf))
+	// clang-format off
+	if ((c_hi == 0x09) || (c_hi >= 0x20) & (c_hi <= 0x7e)
+		|| ((! m_skip_jis0201) && ((c_hi >= 0xa1) & (c_hi <= 0xdf)))
+	)
 		return 1;
+	// clang-format on
 
 	// JIS X 0208 - 16 bit characters
 	u8 c_lo {*(data + 1)};
@@ -29,19 +28,16 @@ size_t shiftjis_validator::is_valid (byte_t const * data) const
 	if ((c_lo >= 0x0) & (c_lo <= 0x3f) || (c_lo == 0x7f) || (c_lo >= 0xfd) & (c_lo <= 0xff))
 		return 0;
 
-	// we've determined the second byte is valid as part of an SJIS encoded pair
-	// if we're in fast mode, that's good enough; return
-	// if(!accurate_mode)
-	//	return true;
-
-	// Partial fields (always excluding 0x7f)
-	// 0x81 - 0x40 to 0xac, 0xb8 to 0xbf, 0xc8 to 0xce, 0xda to 0xe8, 0xf0 to
-	// 0xf7, 0xfc 0x82 - 0x4f to 0x58, 0x60 to 0x79, 0x81 to 0x9a, 0x9f to 0xf1
-	// 0x83 - 0x40 to 0x96, 0x9f to 0xb6, 0xbf to 0xd6
-	// 0x84 - 0x40 to 0x60, 0x70 to 0x91, 0x9f to 0xbe
-	// 0x88 - 0x9f to 0xfc
-	// 0x98 - 0x40 to 0x72, 0x9f to 0xfc
-	// 0xea - 0x40 to 0xa4
+	/*
+		Partial fields (always excluding 0x7f)
+		0x81 - 0x40 to 0xac, 0xb8 to 0xbf, 0xc8 to 0xce, 0xda to 0xe8, 0xf0 to
+		0xf7, 0xfc 0x82 - 0x4f to 0x58, 0x60 to 0x79, 0x81 to 0x9a, 0x9f to 0xf1
+		0x83 - 0x40 to 0x96, 0x9f to 0xb6, 0xbf to 0xd6
+		0x84 - 0x40 to 0x60, 0x70 to 0x91, 0x9f to 0xbe
+		0x88 - 0x9f to 0xfc
+		0x98 - 0x40 to 0x72, 0x9f to 0xfc
+		0xea - 0x40 to 0xa4
+	*/
 	switch (c_hi)
 	{
 		case 0x81:
@@ -75,8 +71,11 @@ size_t shiftjis_validator::is_valid (byte_t const * data) const
 				return 2;
 			return 0;
 	}
-	// Full fields (0x40 to 0xfc, excluding 0x7f)
-	// 0x89 to 0x97, 0x99 to 0x9f, 0xe0 to 0xe9
+
+	/*
+		Full fields (0x40 to 0xfc, excluding 0x7f)
+		0x89 to 0x97, 0x99 to 0x9f, 0xe0 to 0xe9
+	*/
 	// clang-format off
 	if (
 		(((c_hi >= 0x89) & (c_hi <= 0x97))
@@ -90,4 +89,4 @@ size_t shiftjis_validator::is_valid (byte_t const * data) const
 	return 0;
 }
 
-} // namespace encodings
+} // namespace motoi

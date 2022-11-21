@@ -1,22 +1,14 @@
-/**
- * @file jstrings.hpp
- * @author Damian Rogers (damian@motoi.pro)
- * @copyright Motoi Productions / Released under MIT License
- * @brief Tool for finding strings for a given encoding within binary data
- *
- * Updates:
- * 20221103 Initial
- */
-
 #ifndef __MOTOI__JSTRINGS_HPP
 #define __MOTOI__JSTRINGS_HPP
 
-#include "encoding.hpp"
+#include "enc_validator.hpp"
 #include "types.hpp"
-#include <fstream>
-#include <iconv.h>
-#include <string>
+#include <istream>
+#include <utility>
 #include <vector>
+
+namespace motoi
+{
 
 constexpr static size_t const default_match_length {5};
 
@@ -24,14 +16,19 @@ constexpr static size_t const default_match_length {5};
 constexpr static size_t const buffer_size {0x100000 * 4};
 
 /**
- * @brief Contains a valid string found within data including
- * its start address and length within the input
- * the length of the data can be obtained from the vector
- *
+ * @brief Contains an array of data identified as a valid
+ * string of text for a certain encoding. First value is
+ * the offset in the source data in which the string was
+ * found; second value is the vector of data.
  */
 using found_string = std::pair<size_t, std::vector<byte_t>>;
 
+/**
+ * @brief Finds strings matching a given encoding within binary data
+ */
 std::vector<found_string> find (
-	std::istream & is, encoding_validator const & enc, size_t const minimum_match_length = default_match_length);
+	std::istream & input, encoding_validator const & validator, size_t const minimum_match_length = default_match_length);
+
+} // namespace motoi
 
 #endif

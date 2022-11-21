@@ -1,23 +1,29 @@
-/*!
- * \author Damian Rogers (damian@sudden-desu.net)
- * \version 1.1
- * \date 2019.12.01
- * \copyright MIT License
+#ifndef ENC_EUCJP_HPP
+#define ENC_EUCJP_HPP
+
+#include "jis_validator.hpp"
+
+namespace motoi
+{
+
+/**
+ * @brief Determines if input data points to a valid EUC JP code point
+ *
+ * @return size_t Returns 0 if not a valid sequence; otherwise returns the
+ * number of bytes in the code point sequence
+ *
  */
-#ifndef ENC_EUCJP_H
-#define ENC_EUCJP_H
-#include "encoding.hpp"
-
-namespace encodings
+class eucjp_validator : public jis_validator
 {
+private:
+	constexpr static char const * m_iconvcode = "EUC-JP";
 
-class encoding_eucjp : public encoding
-{
 public:
-	encoding_eucjp() : encoding(3) {};
-	u8 is_valid(u8 const * data);
-	~encoding_eucjp() {};
+	eucjp_validator() :
+			jis_validator(3, m_iconvcode) {};
+	uint is_valid(byte_t const * data) const override;
+	~eucjp_validator() override = default;
 };
 
-} // namespace encodings
-#endif // ENC_EUC_H
+} // namespace motoi
+#endif

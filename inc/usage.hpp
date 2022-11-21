@@ -6,6 +6,9 @@
  * Updates:
  * 20220415 Initial
  * 20220722 Using const in show_usage parameters
+ * 20220914 Added show_version
+ * 20221118 Added copyright field; change to non-wide characters to properly support
+ * 	UTF-8; updates to match changes to match app.hpp.cfg
  */
 
 #ifndef __MOTOI__USAGE_HPP
@@ -14,13 +17,23 @@
 #include <getopt.h>
 #include <iostream>
 #include <ostream>
+#include <sstream>
 
+namespace motoi
+{
 struct option_details
 {
 	bool const required;
-	wchar_t const * const desc;
-	wchar_t const * const arg_type;
+	char const * desc;
+	char const * arg_type;
 };
+
+/**
+ * @brief Displays program version
+ *
+ * @param output stream to write the version
+ */
+void show_version(std::ostream & output);
 
 /**
  * @brief Displays program options and usage
@@ -30,7 +43,8 @@ struct option_details
  * order as @c opts
  * @param output stream to write the usage
  */
-void show_usage(option const * opts, option_details const * details,
-								std::wostream & output = std::wcout);
+void show_usage(option const * opts, option_details const * details, std::ostream & output = std::cout);
+
+} // namespace motoi
 
 #endif

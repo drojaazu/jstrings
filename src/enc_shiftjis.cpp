@@ -3,7 +3,7 @@
 namespace motoi
 {
 
-uint shiftjis_validator::is_valid (byte_t const * data) const
+uint shiftjis_validator::is_valid(byte_t const * data) const
 {
 	/*
 		JIS X 0201 - 8-bit characters (including 7-bit ASCII)

@@ -13,7 +13,7 @@ class encoding_validator
 protected:
 	uint m_max_seq_len;
 
-	encoding_validator (uint max_seq_len) :
+	encoding_validator(uint max_seq_len) :
 			m_max_seq_len {max_seq_len}
 	{
 	}
@@ -26,11 +26,11 @@ public:
 	 * \brief Determines if the given bytes are a valid byte sequence for the encoding.
 	 * Returns the number of valid bytes if true.
 	 */
-	virtual uint is_valid (byte_t const * data) const = 0;
+	virtual uint is_valid(byte_t const * data) const = 0;
 
-	uint operator() (byte_t const * data) const
+	uint operator()(byte_t const * data) const
 	{
-		return is_valid (data);
+		return is_valid(data);
 	}
 
 	[[nodiscard]] uint max_seq_len() const

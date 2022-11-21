@@ -10,13 +10,13 @@ namespace motoi
 
 using namespace std;
 
-vector<found_string> find (istream & is, encoding_validator const & enc, size_t const minimum_match_length)
+vector<found_string> find(istream & is, encoding_validator const & enc, size_t const minimum_match_length)
 {
 
 	vector<found_string> out;
 
 	// work buffer - input file is read/procesed in chunks of buffer_size bytes
-	uptr<byte_t> buffer (new byte_t[buffer_size]);
+	uptr<byte_t> buffer(new byte_t[buffer_size]);
 	byte_t * p_buffer = buffer.get();
 
 	/*
@@ -81,14 +81,14 @@ vector<found_string> find (istream & is, encoding_validator const & enc, size_t 
 		if (p_valid_start != nullptr)
 		{
 			// we have a valid string in progress
-			out.push_back ({valid_start_offset, {p_valid_start, p_curr}});
+			out.push_back({valid_start_offset, {p_valid_start, p_curr}});
 			crossed_boundary = true;
 		}
 
 		// always clear the buffer since we don't know how many bytes
 		// will actually be read
-		memset ((char *) (p_buffer + remaining_count), 0, (buffer_size - remaining_count));
-		is.read ((char *) (p_buffer + remaining_count), (buffer_size - remaining_count));
+		memset((char *) (p_buffer + remaining_count), 0, (buffer_size - remaining_count));
+		is.read((char *) (p_buffer + remaining_count), (buffer_size - remaining_count));
 		streamsize buffer_read_size = is.gcount() + remaining_count;
 
 		p_buffer_end = p_buffer + buffer_read_size;
@@ -105,7 +105,7 @@ vector<found_string> find (istream & is, encoding_validator const & enc, size_t 
 
 		while (p_curr < p_boundary)
 		{
-			auto valid_byte_count {enc (p_curr)};
+			auto valid_byte_count {enc(p_curr)};
 			if (valid_byte_count > 0)
 			{
 				// found a valid sequence
@@ -131,7 +131,7 @@ vector<found_string> find (istream & is, encoding_validator const & enc, size_t 
 						p_valid_end = p_curr;
 						if (crossed_boundary)
 						{
-							out.back().second.insert (out.back().second.end(), p_buffer, p_valid_end);
+							out.back().second.insert(out.back().second.end(), p_buffer, p_valid_end);
 						}
 						else
 						{
@@ -167,7 +167,7 @@ vector<found_string> find (istream & is, encoding_validator const & enc, size_t 
 
 		remaining_count = p_buffer_end - p_curr;
 		if (remaining_count > 0)
-			copy (p_curr, p_buffer_end, p_buffer);
+			copy(p_curr, p_buffer_end, p_buffer);
 	}
 
 	// finished processing all input

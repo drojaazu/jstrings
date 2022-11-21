@@ -3,9 +3,9 @@
 namespace motoi
 {
 
-uint cp932_validator::is_valid (byte_t const * data) const
+uint cp932_validator::is_valid(byte_t const * data) const
 {
-	u8 valid_count = shiftjis_validator::is_valid (data);
+	u8 valid_count = shiftjis_validator::is_valid(data);
 	if (valid_count > 0)
 		return valid_count;
 	else

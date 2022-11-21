@@ -22,7 +22,7 @@ namespace motoi
 
 using namespace std;
 
-void show_version (ostream & output)
+void show_version(ostream & output)
 {
 	ostringstream ss;
 	ss << app::name << " - version " << app::version << endl;
@@ -32,14 +32,14 @@ void show_version (ostream & output)
 	output << ss.str();
 }
 
-void show_usage (option const * opts, option_details const * details, ostream & output)
+void show_usage(option const * opts, option_details const * details, ostream & output)
 {
-	setlocale (LC_ALL, "");
+	setlocale(LC_ALL, "");
 
-	show_version (output);
+	show_version(output);
 
 	ostringstream ss;
-	ss << "Usage:" << endl;
+	ss << endl << "Usage:" << endl;
 
 	while (true)
 	{

@@ -26,7 +26,7 @@ using found_string = std::pair<size_t, std::vector<byte_t>>;
 /**
  * @brief Finds strings matching a given encoding within binary data
  */
-std::vector<found_string> find (
+std::vector<found_string> find(
 	std::istream & input, encoding_validator const & validator, size_t const minimum_match_length = default_match_length);
 
 } // namespace motoi

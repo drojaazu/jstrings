@@ -3,7 +3,7 @@
 namespace motoi
 {
 
-uint eucjp_validator::is_valid (byte_t const * data) const
+uint eucjp_validator::is_valid(byte_t const * data) const
 {
 
 	u8 c_hi {*data};

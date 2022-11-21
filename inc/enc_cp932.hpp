@@ -21,7 +21,7 @@ public:
 		m_iconv_code = "CP932";
 	}
 
-	uint is_valid (byte_t const * data) const override;
+	uint is_valid(byte_t const * data) const override;
 	~cp932_validator() override = default;
 };
 

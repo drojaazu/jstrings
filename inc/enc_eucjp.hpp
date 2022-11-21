@@ -20,8 +20,8 @@ private:
 
 public:
 	eucjp_validator() :
-			jis_validator (3, m_iconvcode) {};
-	uint is_valid (byte_t const * data) const override;
+			jis_validator(3, m_iconvcode) {};
+	uint is_valid(byte_t const * data) const override;
 	~eucjp_validator() override = default;
 };
 

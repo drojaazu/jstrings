@@ -24,8 +24,8 @@ namespace motoi
 struct option_details
 {
 	bool const required;
-	wchar_t const * const desc;
-	wchar_t const * const arg_type;
+	char const * desc;
+	char const * arg_type;
 };
 
 /**
@@ -33,7 +33,7 @@ struct option_details
  *
  * @param output stream to write the version
  */
-void show_version (std::ostream & output);
+void show_version(std::ostream & output);
 
 /**
  * @brief Displays program options and usage
@@ -43,7 +43,7 @@ void show_version (std::ostream & output);
  * order as @c opts
  * @param output stream to write the usage
  */
-void show_usage (option const * opts, option_details const * details, std::ostream & output = std::cout);
+void show_usage(option const * opts, option_details const * details, std::ostream & output = std::cout);
 
 } // namespace motoi
 

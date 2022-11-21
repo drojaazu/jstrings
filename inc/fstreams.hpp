@@ -21,29 +21,29 @@ namespace motoi
 {
 
 template <typename StringT>
-std::ifstream ifstream_checked (
+std::ifstream ifstream_checked(
 	std::basic_string<StringT> const & path, std::basic_string<StringT> const & purpose = "read")
 {
-	std::ifstream ifs (path);
+	std::ifstream ifs(path);
 	if (! ifs.good())
 	{
 		std::basic_ostringstream<StringT> oss;
 		oss << "Could not open input path \"" << path << "\" for " << purpose;
-		throw std::system_error (errno, std::system_category(), oss.str());
+		throw std::system_error(errno, std::system_category(), oss.str());
 	}
 	return ifs;
 }
 
 template <typename StringT>
-std::ofstream ofstream_checked (
+std::ofstream ofstream_checked(
 	std::basic_string<StringT> const & path, std::basic_string<StringT> const & purpose = "write")
 {
-	std::ofstream ofs (path);
+	std::ofstream ofs(path);
 	if (! ofs.good())
 	{
 		std::basic_ostringstream<StringT> oss;
-		oss << "Could not open output path \"" << path << "\" for " << purpose << ": " << strerror (errno);
-		throw std::system_error (errno, std::system_category(), oss.str());
+		oss << "Could not open output path \"" << path << "\" for " << purpose << ": " << strerror(errno);
+		throw std::system_error(errno, std::system_category(), oss.str());
 	}
 	return ofs;
 }

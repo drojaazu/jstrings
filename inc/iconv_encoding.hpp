@@ -13,7 +13,7 @@ class iconv_encoding
 protected:
 	char const * m_iconv_code;
 
-	iconv_encoding (char const * iconv_code) :
+	iconv_encoding(char const * iconv_code) :
 			m_iconv_code {iconv_code}
 	{
 	}

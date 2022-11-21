@@ -15,16 +15,16 @@ protected:
 	bool m_include_crlf {false};
 	bool m_skip_jis0201 {false};
 
-	jis_validator (size_t max_seq_len, char const * iconv_code) :
-			encoding_validator (max_seq_len),
-			iconv_encoding (iconv_code)
+	jis_validator(size_t max_seq_len, char const * iconv_code) :
+			encoding_validator(max_seq_len),
+			iconv_encoding(iconv_code)
 	{
 	}
 
 public:
 	jis_validator() = delete;
 
-	void include_crlf (bool include_crlf)
+	void include_crlf(bool include_crlf)
 	{
 		m_include_crlf = include_crlf;
 	}
@@ -34,7 +34,7 @@ public:
 		return m_include_crlf;
 	}
 
-	void skip_jis0201 (bool skip_jis0201)
+	void skip_jis0201(bool skip_jis0201)
 	{
 		m_skip_jis0201 = skip_jis0201;
 	}

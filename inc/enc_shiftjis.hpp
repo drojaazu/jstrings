@@ -22,8 +22,8 @@ private:
 
 public:
 	shiftjis_validator() :
-			jis_validator (2, m_iconvcode) {};
-	uint is_valid (byte_t const * data) const override;
+			jis_validator(2, m_iconvcode) {};
+	uint is_valid(byte_t const * data) const override;
 	~shiftjis_validator() override = default;
 	;
 };

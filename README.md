@@ -1,12 +1,15 @@
 # jstrings
-A tool for finding JIS-based Japanese text in binary data.
+
+A tool for finding JIS encoded Japanese text in binary data.
 
 ## Usage
+
 	jstrings [options] [input_file]
 
 Input can be a filename or data from stdin. Output is sent to stdout.
 
 ### Options
+
 	-e encoding
 	--encoding encoding
 
@@ -18,15 +21,15 @@ Specify the encoding to use. Use one of the strings listed in parantheses below 
 
 Optional; default is Shift-JIS.
 
-	-l integer
-	--match-length integer
+	-l value
+	--match-length value
 
-Set minimum number of characters to match as a valid string.
+Set number of consecutive characters required to be considered a valid string.
 
 Optional; default is 5.
 
-	-c integer
-	--cutoff integer
+	-c value
+	--cutoff value
 
 Limit the output to the specified number of characters for a string. This is useful for "previewing" a file which may have large blocks of junk data that happen to fall within the range of valid code points. Strings that are cut off will be appended with an ellipsis.
 
@@ -46,20 +49,22 @@ Optional; default is disabled.
 
 Output the data in its original encoding without converting to Unicode.
 
-Optional; default is disabled (will convert output strings to UTF-8).
+Optional; default is disabled (will convert output strings to UTF-8 using libiconv).
 
 	-s
 	--skip-jis0201
 
-Skip checking for JIS X 0201 characters. These is an 8 bit katakana-only code space that act as a supplement to ASCII and were generally only used in older home computers. Disabling this can reduce false positives if you are working with newer data.
+Skip checking for JIS X 0201 characters. These is an 8 bit katakana-only code space that acts as a supplement to ASCII and was generally only used in older (early to mid 1980s) home computers. Disabling this can reduce false positives if you are working with newer data.
 
-Optional; default is disabled (will include JIS X 0201 characters).
+Optional; default is disabled (will include JIS X 0201 code points as valid matches).
 
 
 ## Output
+
 Found strings are prepended with the offset in which they were found in the original data and sent to stdout. Strings are converted to UTF-8 using libiconv. The original encoding can be preserved by using the `--raw` option.
 
 ## Building
+
 CMake is used for the build system. From the root directory:
 
 	mkdir build && cd build

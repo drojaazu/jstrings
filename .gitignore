@@ -1,3 +1,4 @@
+.cache/
 .vscode
 *.code-workspace
 bin

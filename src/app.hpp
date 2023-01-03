@@ -2,7 +2,7 @@
  * @author Damian R (damian@motoi.pro)
  * @brief A tool for finding JIS-based Japanese text in binary data.
  * @version 1.6
- *
+ * 
  * @copyright ©2018 Motoi Productions / Released under MIT License
  *
  */

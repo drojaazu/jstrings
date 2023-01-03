@@ -58,12 +58,6 @@ Skip checking for JIS X 0201 characters. These is an 8 bit katakana-only code sp
 
 Optional; default is disabled (will include JIS X 0201 code points as valid matches).
 
-
-	-l
-	--multiline
-
-Do not break the string on CR/LF characters. Such characters will instead appear as /0D and /0A respectively in the output string.
-
 ## Output
 
 Found strings are prepended with the offset in which they were found in the original data and sent to stdout. Strings are converted to UTF-8 using libiconv. The original encoding can be preserved by using the `--raw` option.
